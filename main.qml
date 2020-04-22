@@ -108,7 +108,7 @@ ApplicationWindow {
                             x1.a(usuario)
                             xApp.focus=true
                         }
-                        if(msg.indexOf('!r')>=0){
+                        if(msg.indexOf('!r')>=0&&x1.cbe){
                             if(!x1.inTime()){
                                 unik.speak(''+usuario+' responde antes de tiempo.')
                                 //return
@@ -123,6 +123,21 @@ ApplicationWindow {
                                 }
                             }
                         }
+                        if(!x1.cbe){
+                            if(!x1.inTime()){
+                                unik.speak(''+usuario+' responde antes de tiempo.')
+                                //return
+                            }else{
+                                let m1=mensaje.split(' ')
+                                //uLogView.showLog('m1: '+m1.toString())
+                                if(m1.length>=1){
+                                    let pf=(''+m1[1]).replace(/_/g, '')
+                                    unik.speak(''+usuario+' responde palabra '+pf)
+                                    x1.agregarPalabra(pf, usuario)
+                                }
+                            }
+                        }
+
                         /*
                         if(msg.indexOf(''+app.user)>=0 &&msg.indexOf('show')>=0){
                             app.visible=true

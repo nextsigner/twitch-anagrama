@@ -106,8 +106,15 @@ Item {
             var a=app.wordsUsed
             repWU.model=a
             repWU2.model=a
+             repWU3.model=a
 
-            if(rowWordsUsed.width<=r.width)return
+            if(rowWordsUsed.width<=r.width){
+                rowWordsUsed2.visible=false
+                rowWordsUsed3.visible=false
+                return
+            }
+            rowWordsUsed2.visible=true
+            rowWordsUsed3.visible=true
             if(rowWordsUsed.x===0){
                 rowWordsUsed.x=0-rowWordsUsed.width
             }

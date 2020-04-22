@@ -1,6 +1,8 @@
 import QtQuick 2.5
+import QtQuick.Controls 2.0
 import QtMultimedia 5.0
 import QtQuick.Particles 2.0
+import Qt.labs.settings 1.0
 import "funcs.js" as JS
 
 Rectangle {
@@ -11,6 +13,11 @@ Rectangle {
     border.width: 2
     border.color: 'red'
     clip: true
+    property alias cbe: cbCommandEnabled.checked
+    Settings{
+        id: sX1
+        property bool cbCE: false
+    }
     Column{
         spacing: app.fs*0.5
         anchors.centerIn: r
@@ -21,10 +28,22 @@ Rectangle {
             countDown: true
             anchors.horizontalCenter: parent.horizontalCenter
         }
+        Row{
+            UText{
+                text: 'Comando !r'
+            }
+            CheckBox{
+                id: cbCommandEnabled
+                onCheckedChanged: sX1.cbCE=checked
+            }
+        }
         XL1{
             id: xL1
             height: r.height-xWord.height-xCrono.height-app.fs*10
         }
+    }
+    Component.onCompleted: {
+        cbCommandEnabled.checked=sX1.cbCE
     }
 
     function agregarPalabra(w, u){
