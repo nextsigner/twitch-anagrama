@@ -114,8 +114,11 @@ Item {
         }
         //uLogView.showLog('Calculando '+wcorr1.length+' de  '+app.cWord.length+' es igual a '+calcularPuntos(wcorr1))
         //unik.speak('Calculando '+wcorr1.length+' de  '+app.cWord.length+' es igual a '+calcularPuntos(wcorr1))
-        unik.speak('Palabra '+w+'de  '+u+' aceptada.')
-        registrarScore(u, wcorr1, app.cWord, calcularPuntos(wcorr1))
+        //unik.speak('Palabra '+w+'de  '+u+' aceptada.')
+        let point=parseFloat(calcularPuntos(wcorr1)).toFixed(2)
+        let msg='<b>'+u+'</b> ha sumado <b>'+point+'</b> puntos!'
+        showPoints(msg)
+        registrarScore(u, wcorr1, app.cWord, point)
     }
     function calcularPuntos(w){
         let porc=parseFloat(parseFloat( w.length / app.cWord.length) * 100)
@@ -123,10 +126,13 @@ Item {
     }
     function registrarScore(u, w, cw, score){
         if(app.wordsUsed.indexOf(w)>=0){
-            //unik.speak('Esta palabra ya está utilizada por '+app.wordsUsedBy[app.wordsUsed.indexOf(w)])
-            //app.sendToChat('[Juego dice] Esta palabra ya está utilizada por '+app.wordsUsedBy[app.wordsUsed.indexOf(w)])
-            let comp=Qt.createComponent("XE1.qml")
-            let obj=comp.createObject(xApp, {y:500})
+            let msg=''
+            if(u===app.wordsUsedBy[app.wordsUsed.indexOf(w)]){
+                msg='Ya habías enviado esta la palabra <b>'+w+'!</b>'
+            }else{
+                msg='La palabra '+w+' ya la ganó <b>'+app.wordsUsedBy[app.wordsUsed.indexOf(w)]+'</b>!'
+            }
+            showFail(msg)
             return
         }
         app.wordsUsedBy.push(u)
@@ -150,5 +156,13 @@ Item {
         let d=new Date(Date.now())
         sql='insert into hscores(nickname, palabra, respuesta, ms, score)values(\''+u+'\',\''+w+'\',\''+cw+'\', '+d.getTime()+', '+rec+')'
         unik.sqlQuery(sql)
+    }
+    function showFail(w){
+        let comp=Qt.createComponent("XE1.qml")
+        let obj=comp.createObject(xApp, {y:xApp.height, text:w})
+    }
+    function showPoints(w){
+        let comp=Qt.createComponent("XA1.qml")
+        let obj=comp.createObject(xApp, {y:xApp.height, text:w})
     }
 }

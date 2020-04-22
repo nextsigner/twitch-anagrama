@@ -26,6 +26,7 @@ ApplicationWindow {
     property string uSearchWord: 'Ninguna'
     property var wordsUsed: []
     property var wordsUsedBy: []
+    property var game: []
 
     FontLoader{name: "FontAwesome"; source: "qrc:/fontawesome-webfont.ttf"}
     USettings{
@@ -110,8 +111,7 @@ ApplicationWindow {
             text: 'Enviar'
             z: uLogView.z+1
             onClicked: {
-                let comp=Qt.createComponent("XE1.qml")
-                let obj=comp.createObject(xApp, {y:500, text:'lskdf añsdfas as fasd a fas salfk añ'})
+
             }
         }
         ULogView{

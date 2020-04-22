@@ -6,7 +6,7 @@ Rectangle {
     width: xApp.width*0.3
     height: l.contentHeight+app.fs
     anchors.right: parent.right
-    color: 'red'
+    color: 'green'
     opacity: 1.0
     z:999999
     radius: app.fs*0.5
@@ -31,7 +31,7 @@ Rectangle {
     }
     Image {
         id: img
-        source: "file:./imgs/fail.png"
+        source: "file:./imgs/point.png"
         width: app.fs*5
         height: width
         fillMode: Image.PreserveAspectFit
