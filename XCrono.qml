@@ -149,6 +149,13 @@ Item {
         running: false
         repeat: true
         interval: 10
+        onRunningChanged: {
+            if(running){
+                app.sendToChat('[Juego dice] Comencemos! ')
+            }else{
+                app.sendToChat('[Juego dice] Stop! ')
+            }
+        }
         onTriggered: {
             if(r.msCD===0){
                 r.msCD=100

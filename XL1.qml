@@ -123,7 +123,10 @@ Item {
     }
     function registrarScore(u, w, cw, score){
         if(app.wordsUsed.indexOf(w)>=0){
-            unik.speak('Esta palabra ya está utilizada por '+app.wordsUsedBy[app.wordsUsed.indexOf(w)])
+            //unik.speak('Esta palabra ya está utilizada por '+app.wordsUsedBy[app.wordsUsed.indexOf(w)])
+            //app.sendToChat('[Juego dice] Esta palabra ya está utilizada por '+app.wordsUsedBy[app.wordsUsed.indexOf(w)])
+            let comp=Qt.createComponent("XE1.qml")
+            let obj=comp.createObject(xApp, {y:500})
             return
         }
         app.wordsUsedBy.push(u)

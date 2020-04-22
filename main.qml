@@ -66,6 +66,9 @@ ApplicationWindow {
                 XShowSig{
                     id: xShowSig
                     height: parent.height//-app.fs*10
+                    onWordIsValidated: {
+                        app.sendToChat('[Juego dice] Palabra actual '+word)
+                    }
                     Rectangle{
                         anchors.fill: parent
                         border.width: 2
@@ -75,7 +78,46 @@ ApplicationWindow {
                 }
             }
         }
-        ULogView{id: uLogView}
+        Timer{
+            id: ts
+            running: false
+            repeat: false
+            interval: 3000
+            onTriggered: {
+                wv.runJavaScript('document.getElementsByTagName("textarea")[0].focus()', function(resultFocus) {
+                    wv.runJavaScript('document.getElementsByTagName("div").length', function(result) {
+                        uLogView.showLog('div: '+result)
+                        let d=new Date(Date.now())
+
+                            let ndEnviar=result-7
+                            wv.runJavaScript('document.getElementsByTagName("div")['+ndEnviar+'].click()', function(resultEnviar) {
+                                uLogView.showLog('div: '+unik.toHtmlEscaped(resultEnviar))
+                            });
+
+                        let nd=result-8
+                        wv.runJavaScript('document.getElementsByTagName("div")['+nd+'].innerHTML', function(result2) {
+                            uLogView.showLog('div: '+unik.toHtmlEscaped(result2))
+                        });
+                        //                    wv.runJavaScript('document.getElementsByTagName("textarea")[0].click()', function(result2) {
+                        //                        uLogView.showLog('textarea: '+result2)
+                        //                    });
+                        //uLogView.showLog('textarea: '+result)
+                    });
+                });
+            }
+        }
+        BotonUX{
+            text: 'Enviar'
+            z: uLogView.z+1
+            onClicked: {
+                let comp=Qt.createComponent("XE1.qml")
+                let obj=comp.createObject(xApp, {y:500, text:'lskdf añsdfas as fasd a fas salfk añ'})
+            }
+        }
+        ULogView{
+            id: uLogView
+            width: parent.width*0.5
+        }
         UWarnings{id: uWarnings}
     }
     Timer{
@@ -103,12 +145,7 @@ ApplicationWindow {
                         if((''+msg).indexOf('chat.whatsapp.com')<0&&(''+mensaje).indexOf('!')!==1){
                             //unik.speak(msg)
                         }
-                        if(msg.indexOf('!a')>=0){
-                            unik.speak(''+usuario+' lanza nave.')
-                            x1.a(usuario)
-                            xApp.focus=true
-                        }
-                        if(msg.indexOf('!r')>=0&&x1.cbe){
+                        if(isVM(msg)&&msg.indexOf('[Juego dice]')<0&&msg.indexOf('!r')>=0&&x1.cbe){
                             if(!x1.inTime()){
                                 unik.speak(''+usuario+' responde antes de tiempo.')
                                 //return
@@ -118,12 +155,13 @@ ApplicationWindow {
                                 //uLogView.showLog('m1: '+m1.toString())
                                 if(m1.length>=1){
                                     let pf=(''+m1[1]).replace(/_/g, '')
+                                    if(pf.indexOf('undefined')>=0)return
                                     unik.speak(''+usuario+' responde palabra '+pf)
                                     x1.agregarPalabra(pf, usuario)
                                 }
                             }
                         }
-                        if(!x1.cbe){
+                        if(isVM(msg)&&msg.indexOf('[Juego dice]')<0&&!x1.cbe){
                             if(!x1.inTime()){
                                 unik.speak(''+usuario+' responde antes de tiempo.')
                                 //return
@@ -132,12 +170,12 @@ ApplicationWindow {
                                 //uLogView.showLog('m1: '+m1.toString())
                                 if(m1.length>=1){
                                     let pf=(''+m1[1]).replace(/_/g, '')
+                                    if(pf.indexOf('undefined')>=0)return
                                     unik.speak(''+usuario+' responde palabra '+pf)
                                     x1.agregarPalabra(pf, usuario)
                                 }
                             }
                         }
-
                         /*
                         if(msg.indexOf(''+app.user)>=0 &&msg.indexOf('show')>=0){
                             app.visible=true
@@ -271,6 +309,23 @@ ApplicationWindow {
 
         app.maxWordLength=JS.getWordCount()
         app.cWord=JS.getWord()
+    }
+    function isVM(m){
+        let s1='Nightbot'
+        if(m.indexOf(s1)>=0)return false;
+        return true
+    }
+    function sendToChat(msg){
+        let s='#include <AutoItConstants.au3>\n'
+        +'MouseClick($MOUSE_CLICK_LEFT, 1200, 650, 1)\n'
+        +'Sleep(100)\n'
+        +'Send("'+msg+'{ENTER}")\n'
+        +'Sleep(250)\n'
+        +'Send("{ENTER}")\n'
+        let d=new Date(Date.now())
+        let fn=unik.getPath(4)+'/autoit'+d.getTime()+'.au3'
+        unik.setFile(fn, s)
+        unik.ejecutarLineaDeComandoAparte("cmd /c \""+fn+"\"")
     }
 }
 

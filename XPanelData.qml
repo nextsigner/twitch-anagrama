@@ -19,13 +19,13 @@ Rectangle{
                 anchors.centerIn: parent
                 Rectangle{
                     width: xScoreTopFive.width-app.fs
-                    height: app.fs*3
+                    height: app.fs*1.2
                     color: app.c2
                     border.width: 1
                     border.color: app.c2
                     UText{
-                        text:  '<b>Top Five Records</b>'
-                        font.pixelSize: app.fs*1.5
+                        text:  '<b>Los mejores</b>'
+                        font.pixelSize: app.fs
                         color: app.c1
                         anchors.centerIn: parent
                     }
@@ -35,10 +35,10 @@ Rectangle{
                     model: []
                     Rectangle{
                         width: xScoreTopFive.width-app.fs
-                        height: app.fs*2
+                        height: app.fs*1.4
                         border.width: 2
                         border.color: app.c2
-                        radius: app.fs*0.5
+                        radius: app.fs*0.25
                         color: app.c1
                         UText{
                             text:  '<b>'+parseInt(index + 1)+'</b>:'+modelData+' '+r.a2[index]+' pts.'
@@ -46,6 +46,41 @@ Rectangle{
                         }
                     }
                 }
+                Rectangle{
+                    width: xScoreTopFive.width-app.fs
+                    height: app.fs*1.2
+                    color: app.c2
+                    border.width: 1
+                    border.color: app.c2
+                    UText{
+                        text:  '<b>Últimas Palabras</b>'
+                        font.pixelSize: app.fs
+                        color: app.c1
+                        anchors.centerIn: parent
+                    }
+                }
+                Repeater{
+                    id: repUP
+                    model: []
+                    Rectangle{
+                        width: xScoreTopFive.width-app.fs
+                        height: txtUP.contentHeight+app.fs*0.5
+                        border.width: 2
+                        border.color: app.c2
+                        radius: app.fs*0.25
+                        color: app.c1
+                        UText{
+                            id: txtUP
+                            text:  modelData
+                            font.pixelSize: app.fs*0.65
+                            width: parent.width-app.fs
+                            wrapMode: Text.WordWrap
+                            horizontalAlignment: Text.AlignHCenter
+                            anchors.centerIn: parent
+                        }
+                    }
+                }
+
             }
         }
         UText{
@@ -122,6 +157,14 @@ Rectangle{
                 let fecha=' el día '+dia+'/'+mes+'/'+anio+' a las '+h+':'+m+':'+s+' GMT -3'
                 labelHScore.text='<b>Record: </b> El usuario '+u+' obtuvo '+s+' puntos con la palabra '+r+' y obtenida de la palabra '+p+' '+fecha
             }
+            sql='select * from hscores order by ms desc limit 5;'
+            rows=unik.getSqlData(sql)
+            let aup=[]
+            for(let i=0;i<rows.length;i++){
+                let cad='<b>'+rows[i].col[1]+'</b> sumó '+rows[i].col[5]+'pts con la palabra <b>"'+rows[i].col[2]+'"</b> en <b>"'+rows[i].col[3]+'"</b>'
+                aup.push(cad)
+            }
+            repUP.model=aup
         }
     }
     property var objData: ({})
