@@ -66,6 +66,10 @@ Item {
                     onClicking: {
                         if(r.mCD===0&&r.sCD===0){
                                 setCountDownInit(sCrono.minutosCD)
+                                var d1=new Date(Date.now())
+                                let nid=''+d1.getDate()+d1.getMonth()+d1.getFullYear()+d1.getHours()+d1.getMinutes()+d1.getSeconds()
+                                //uLogView.showLog('nid: '+nid)
+                                app.idGame=nid
                                 tTempCountDown.running=true
                         }else{
                             tTempCountDown.running=!tTempCountDown.running
@@ -81,6 +85,7 @@ Item {
                     c:app.c1
                     b:app.c2
                     onClicking: {
+                        app.idGame=0
                         tTempCountDown.stop()
                         r.mCD=0
                         r.sCD=0

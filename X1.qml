@@ -42,6 +42,12 @@ Rectangle {
             height: r.height-xWord.height-xCrono.height-app.fs*10
         }
     }
+    UText{
+        text: 'idGame: '+app.idGame
+        font.pixelSize: app.fs*0.5
+        x: 8
+        y:8
+    }
     Component.onCompleted: {
         cbCommandEnabled.checked=sX1.cbCE
     }

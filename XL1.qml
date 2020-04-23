@@ -125,6 +125,7 @@ Item {
         return porc*w.length
     }
     function registrarScore(u, w, cw, score){
+        let d=new Date(Date.now())
         if(app.wordsUsed.indexOf(w)>=0){
             let msg=''
             if(u===app.wordsUsedBy[app.wordsUsed.indexOf(w)]){
@@ -149,13 +150,27 @@ Item {
             sql='update scores set score='+cv+' where nickname=\''+u+'\''
             unik.sqlQuery(sql)
         }else{
-            sql='insert into scores(nickname, score)values(\''+u+'\', '+parseFloat(score).toFixed(2)+')'
+            sql='insert into scores(nickname, game, ms, score)values(\''+u+'\',\''+app.idGame+'\', '+d.getTime()+', '+parseFloat(score).toFixed(2)+')'
             unik.sqlQuery(sql)
         }
         rec=parseFloat(score).toFixed(2)
-        let d=new Date(Date.now())
-        sql='insert into hscores(nickname, palabra, respuesta, ms, score)values(\''+u+'\',\''+w+'\',\''+cw+'\', '+d.getTime()+', '+rec+')'
+        sql='insert into hscores(nickname, palabra, respuesta, game, ms, score)values(\''+u+'\',\''+w+'\',\''+cw+'\',\''+app.idGame+'\', '+d.getTime()+', '+rec+')'
         unik.sqlQuery(sql)
+
+        //Sumar puntos de juego
+        sql='select * from hscores where nickname=\''+u+'\' and game=\''+app.idGame+'\''
+        rows=unik.getSqlData(sql)
+        rec=0.00
+        if(rows.length>0){
+            for(let i=0;i<rows.length;i++){
+               rec=parseFloat(rec+parseFloat(rows[i].col[6]))
+            }
+            //uLogView.showLog('rec: '+rec)
+            sql='insert into games(nickname, game, points)values(\''+u+'\',\''+app.idGame+'\', '+rec+')'
+            //uLogView.showLog('sql: '+sql)
+            //console.log(sql)
+            unik.sqlQuery(sql)
+        }
     }
     function showFail(w){
         let comp=Qt.createComponent("XE1.qml")

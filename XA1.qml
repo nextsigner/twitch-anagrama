@@ -42,7 +42,7 @@ Rectangle {
     }
     Audio{
         id: ap
-        source: 'file:./sounds/fail.wav'
+        source: 'file:./sounds/acert1.wav'
         autoLoad: true
         autoPlay: true
     }

@@ -26,7 +26,7 @@ ApplicationWindow {
     property string uSearchWord: 'Ninguna'
     property var wordsUsed: []
     property var wordsUsedBy: []
-    property var game: []
+    property string idGame: '*'
 
     FontLoader{name: "FontAwesome"; source: "qrc:/fontawesome-webfont.ttf"}
     USettings{
@@ -107,13 +107,13 @@ ApplicationWindow {
                 });
             }
         }
-        BotonUX{
-            text: 'Enviar'
-            z: uLogView.z+1
-            onClicked: {
+//        BotonUX{
+//            text: 'Enviar'
+//            z: uLogView.z+1
+//            onClicked: {
 
-            }
-        }
+//            }
+//        }
         ULogView{
             id: uLogView
             width: parent.width*0.5
@@ -288,11 +288,13 @@ ApplicationWindow {
         app.visible=true
         //getViewersCount()
 
-        unik.sqliteInit('scores.sqlite')
+        unik.sqliteInit('anagrama.sqlite')
         let sql='CREATE TABLE IF NOT EXISTS scores'
             +'('
             +'id INTEGER PRIMARY KEY AUTOINCREMENT,'
             +'nickname TEXT NOT NULL,'
+            +'game TEXT NOT NULL,'
+            +'ms NUMERIC NOT NULL,'
             +'score NUMERIC NOT NULL'
             +')'
         unik.sqlQuery(sql)
@@ -302,8 +304,17 @@ ApplicationWindow {
                 +'nickname TEXT NOT NULL,'
                 +'palabra TEXT NOT NULL,'
                 +'respuesta TEXT NOT NULL,'
+                +'game TEXT NOT NULL,'
                 +'ms NUMERIC NOT NULL,'
                 +'score NUMERIC NOT NULL'
+                +')'
+        unik.sqlQuery(sql)
+        sql='CREATE TABLE IF NOT EXISTS games'
+                +'('
+                +'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+                +'nickname TEXT NOT NULL,'
+                +'game TEXT NOT NULL,'
+                +'points NUMERIC NOT NULL'
                 +')'
         unik.sqlQuery(sql)
 
