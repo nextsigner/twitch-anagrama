@@ -2,7 +2,7 @@ import QtQuick 2.0
 
 Rectangle{
     id: r
-    width: (xApp.width-x1.width)*0.5
+    width: xApp.width*0.5
     height: xApp.height
     color: app.c1
     Column{

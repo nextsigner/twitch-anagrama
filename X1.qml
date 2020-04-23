@@ -7,13 +7,14 @@ import "funcs.js" as JS
 
 Rectangle {
     id: r
-    width: parent.width*0.8
+    width: xApp.width*0.5
     height: parent.height
     color: app.c1
     border.width: 2
     border.color: 'red'
     clip: true
     property alias cbe: cbCommandEnabled.checked
+    property alias ti: tiMsg
     Settings{
         id: sX1
         property bool cbCE: false
@@ -40,6 +41,18 @@ Rectangle {
         XL1{
             id: xL1
             height: r.height-xWord.height-xCrono.height-app.fs*10
+        }
+        UTextInput{
+            id: tiMsg
+            label:'Mensage:'
+            width: r.width-app.fs*0.25
+            anchors.horizontalCenter: parent.horizontalCenter
+            focus: true
+            onSeted: app.sendToChat(text)
+            Keys.onReturnPressed: {
+                uLogView.showLog('Return pressed!')
+                app.sendToChat(text)
+            }
         }
     }
     UText{

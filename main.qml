@@ -54,28 +54,54 @@ ApplicationWindow {
                 id: x1
                 width: xApp.width*0.5
             }
-            Rectangle{
-                width: (xApp.width-x1.width)*0.5
-                height: xApp.height
-                WebEngineView{
-                    id: wv
-                    anchors.fill: parent
-                    onLoadProgressChanged: {
-                        if(loadProgress===100)tCheck.start()
+        }
+        Rectangle{
+            id: xWV
+            width: xApp.width*0.25
+            height: xApp.height
+            state: 'show'
+            property int cantMsgs: 0
+            states: [
+                State {
+                    name: "show"
+                    PropertyChanges {
+                        target: xWV
+                        x: xApp.width-xWV.width
+                    }
+                },
+                State {
+                    name: "hide"
+                    PropertyChanges {
+                        target: xWV
+                        x: xApp.width
                     }
                 }
-                XShowSig{
-                    id: xShowSig
-                    height: parent.height//-app.fs*10
-                    onWordIsValidated: {
-                        app.sendToChat('[Juego dice] Palabra actual '+word)
-                    }
-                    Rectangle{
-                        anchors.fill: parent
-                        border.width: 2
-                        border.color: 'red'
-                        color: 'transparent'
-                    }
+            ]
+            Behavior on x{
+                NumberAnimation{duration: 250;easing.type: Easing.InOutQuad}
+            }
+            WebEngineView{
+                id: wv
+                anchors.fill: parent
+                onLoadProgressChanged: {
+                    if(loadProgress===100)tCheck.start()
+                }
+                onJavaScriptDialogRequested: {
+                    //uLogView.showLog('Ventana!')
+                    autoItRequest('Send("{ENTER}")\n')
+                }
+            }
+            XShowSig{
+                id: xShowSig
+                height: parent.height//-app.fs*10
+                onWordIsValidated: {
+                    app.sendToChat('[Juego dice] Palabra actual '+word)
+                }
+                Rectangle{
+                    anchors.fill: parent
+                    border.width: 2
+                    border.color: 'red'
+                    color: 'transparent'
                 }
             }
         }
@@ -90,10 +116,10 @@ ApplicationWindow {
                         uLogView.showLog('div: '+result)
                         let d=new Date(Date.now())
 
-                            let ndEnviar=result-7
-                            wv.runJavaScript('document.getElementsByTagName("div")['+ndEnviar+'].click()', function(resultEnviar) {
-                                uLogView.showLog('div: '+unik.toHtmlEscaped(resultEnviar))
-                            });
+                        let ndEnviar=result-7
+                        wv.runJavaScript('document.getElementsByTagName("div")['+ndEnviar+'].click()', function(resultEnviar) {
+                            uLogView.showLog('div: '+unik.toHtmlEscaped(resultEnviar))
+                        });
 
                         let nd=result-8
                         wv.runJavaScript('document.getElementsByTagName("div")['+nd+'].innerHTML', function(result2) {
@@ -107,13 +133,13 @@ ApplicationWindow {
                 });
             }
         }
-//        BotonUX{
-//            text: 'Enviar'
-//            z: uLogView.z+1
-//            onClicked: {
-
-//            }
-//        }
+        BotonUX{
+            text: 'Enviar'
+            z: uLogView.z+1
+            onClicked: {
+                sendToChat('Probando')
+            }
+        }
         ULogView{
             id: uLogView
             width: parent.width*0.5
@@ -201,6 +227,14 @@ ApplicationWindow {
     Shortcut{
         sequence: 'Esc'
         onActivated: {
+            if(x1.ti.textInput.focus){
+                xApp.focus=true
+                return
+            }
+            if(wv.focus){
+                xApp.focus=true
+                return
+            }
             if(uLogView.visible){
                 uLogView.visible=false
                 return
@@ -245,9 +279,9 @@ ApplicationWindow {
         }
     }
     Shortcut{
-        sequence: 'r'
+        sequence: 'w'
         onActivated: {
-
+            xWV.state=xWV.state==='show'?'hide':'show'
         }
     }
     Shortcut{
@@ -326,13 +360,31 @@ ApplicationWindow {
         if(m.indexOf(s1)>=0)return false;
         return true
     }
-    function sendToChat(msg){
+    function autoItRequest(c){
         let s='#include <AutoItConstants.au3>\n'
-        +'MouseClick($MOUSE_CLICK_LEFT, 1200, 650, 1)\n'
-        +'Sleep(100)\n'
-        +'Send("'+msg+'{ENTER}")\n'
-        +'Sleep(250)\n'
-        +'Send("{ENTER}")\n'
+            +c+'\n'
+        let d=new Date(Date.now())
+        let fn=unik.getPath(4)+'/autoit'+d.getTime()+'.au3'
+        unik.setFile(fn, s)
+        unik.ejecutarLineaDeComandoAparte("cmd /c \""+fn+"\"")
+    }
+
+    function sendToChat(msg){
+        clipboard.setText(msg)
+        let posx=1200
+        if(xWV.state==='hide'){
+            posx=1280
+        }
+        let posxR=x1.x+x1.ti.x+x1.ti.width*0.3
+        let posyR=x1.ti.y+x1.ti.parent.height*0.1
+        wv.focus=true
+        let s='#include <AutoItConstants.au3>\n'
+            +'MouseClick($MOUSE_CLICK_LEFT, '+posx+', 650, 1)\n'
+            +'Sleep(100)\n'
+            +'Send("{RCTRL down}v{RCTRL up}")\n'
+            +'Sleep(250)\n'
+            +'Send("{ENTER}")\n'
+            +'MouseClick($MOUSE_CLICK_LEFT, '+posxR+', '+posyR+', 1)\n'
         let d=new Date(Date.now())
         let fn=unik.getPath(4)+'/autoit'+d.getTime()+'.au3'
         unik.setFile(fn, s)
