@@ -343,6 +343,12 @@ ApplicationWindow {
         }
     }
     Shortcut{
+        sequence: 'r'
+        onActivated: {
+            app.wordsUsed.push(JS.getWord())
+        }
+    }
+    Shortcut{
         sequence: 'Ctrl+c'
         onActivated: {
             if(unikSettings.currentNumColor<16){

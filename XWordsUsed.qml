@@ -6,73 +6,79 @@ Rectangle {
     border.width: 1
     border.color: app.c2
     color: 'transparent'
-    //height: app.fs*1.4
-    //    SequentialAnimation{
-    //        running: flowWU.width>r.parent.width
-    //        loops: Animation.Infinite
-    //        NumberAnimation {
-    //            id:na1
-    //            target: flowWU
-    //            property: "x"
-    //            duration: app.wordsUsed.length*1000
-    //            //easing.type: Easing.InOutQuad
-    //            from: 0
-    //            to: 0-flowWU.width*0.5-flowWU.spacing
-    //        }
-    ////        NumberAnimation {
-    ////            id:na2
-    ////            target: flowWU
-    ////            property: "x"
-    ////            from: flowWU.x
-    ////            to: 0
-    ////        }
-    //    }
-    Flickable{
-        id: flWU
+    clip: true
+    property int fs: app.fs*2
+    Item{
+        id: xwu
         anchors.fill: r
-        contentWidth: r.width
-        contentHeight: flowWU.height
-        Flow{
-            id: flowWU
-            spacing: app.fs
-            Behavior on x{
-                NumberAnimation{duration: 8000}
-            }
-            Repeater{
-                id: repWU
-                model: app.wordsUsed
-                Rectangle{
-                    width: labelWord.contentWidth+app.fs
-                    height: labelWord.height+app.fs*0.2
-                    border.width: 2
-                    border.color: app.c2
-                    radius: app.fs*0.25
-                    color: 'transparent'
-                    UText{
-                        id: labelWord
-                        text: modelData
-                        width: contentWidth
-                        anchors.centerIn: parent
-                    }
+
+    }
+
+
+        Component{
+            id: compUWU
+            Rectangle{
+                id: xCompUWU
+                width: parent.width-app.fs*0.5
+                height: labelWord.contentHeight+app.fs
+                anchors.horizontalCenter: parent.horizontalCenter
+                border.width: 2
+                border.color: app.c2
+                radius: app.fs*0.25
+                color: 'transparent'
+                property string word
+                property int time
+                onYChanged:{
+                    if(y<0-xCompUWU.height)xCompUWU.destroy(10)
+                }
+                Behavior on y{
+                    NumberAnimation{duration: time*2000}
+                }
+                UText{
+                    id: labelWord
+                    text: word
+                    font.pixelSize: r.fs
+                    width: xCompUWU.width
+                    wrapMode: Text.WrapAnywhere
+                    horizontalAlignment: Text.AlignHCenter
+                    textFormat: Text.RichText
+                    anchors.centerIn: parent
+                }
+                Component.onCompleted: {
+                     y=0-xCompUWU.height*2
                 }
             }
         }
-    }
     Timer{
-        id: tUpdate
+        id: tMove
         running: true
         repeat: true
         interval: 1000
-        property int v: 0
+        property int uc: 0
         onTriggered: {
-            var a=app.wordsUsed
-            repWU.model=a
-            if(flWU.contentY===0){
-                flWU.contentY=flWU.contentHeight-flWU.height
+            if(app.wordsUsed.length===0)return
+            if(xwu.children.length>1)return
+            let data=''
+            for(var i=0;i<app.wordsUsed.length;i++){
+                data+=app.wordsUsed[i]
+                if(i<app.wordsUsed.length-1){
+                    data+='<br />'
+                }
             }
-            if(flWU.contentY===flWU.contentHeight-flWU.height){
-                flWU.contentY=0
-            }
+            tMove.interval=app.wordsUsed.length*1000
+            let comp=compUWU
+            let obj=comp.createObject(xwu, {y:r.height+app.fs*2, word:data, time: app.wordsUsed.length})
         }
     }
+//    Timer{
+//        id: tUpdate
+//        running: true
+//        repeat: true
+//        interval: 300
+//        onTriggered: {
+//            if(lmUWU.count!==app.wordsUsed.length){
+//                lmUWU.append(lmUWU.addItem(app.wordsUsed[app.wordsUsed.length-1]))
+//            }
+//        }
+//    }
 }
