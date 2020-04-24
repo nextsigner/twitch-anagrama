@@ -55,13 +55,13 @@ Rectangle{
 
                 Rectangle{
                     width: xScoreTopFive.width-app.fs
-                    height: app.fs*1.2
+                    height: app.fs*2.3
                     color: app.c2
                     border.width: 1
                     border.color: app.c2
                     UText{
-                        text:  '<b>Jugando con '+app.cWord+'</b>'
-                        font.pixelSize: app.fs
+                        text:  'Juego con Palabra <b>"'+app.cWord+'"</b>'
+                        font.pixelSize: app.fs*2
                         color: app.c1
                         anchors.centerIn: parent
                     }
@@ -79,7 +79,7 @@ Rectangle{
                         UText{
                             id: txtUG
                             text:  modelData
-                            font.pixelSize: app.fs
+                            font.pixelSize: app.fs*2
                             width: parent.width-app.fs
                             wrapMode: Text.WordWrap
                             horizontalAlignment: Text.AlignHCenter
@@ -89,13 +89,13 @@ Rectangle{
                 }
                 Rectangle{
                     width: xScoreTopFive.width-app.fs
-                    height: app.fs*1.2
+                    height: app.fs*2.3
                     color: app.c2
                     border.width: 1
                     border.color: app.c2
                     UText{
-                        text:  '<b>Últimas Palabras</b>'
-                        font.pixelSize: app.fs
+                        text:  '<b>Últimas Palabras ingresadas</b>'
+                        font.pixelSize: app.fs*2
                         color: app.c1
                         anchors.centerIn: parent
                     }
@@ -109,11 +109,11 @@ Rectangle{
                         border.width: 2
                         border.color: app.c2
                         radius: app.fs*0.25
-                        color: app.c1
+                        color: (''+modelData).indexOf('-1pts')>=0?'red':'green'
                         UText{
                             id: txtUP
-                            text:  modelData
-                            font.pixelSize: app.fs
+                            text:  (''+modelData).indexOf('-1pts')<0?modelData:(''+modelData).replace('-1pts', 'palabra no válida.')
+                            font.pixelSize: app.fs*2
                             width: parent.width-app.fs
                             wrapMode: Text.WordWrap
                             horizontalAlignment: Text.AlignHCenter
@@ -121,7 +121,6 @@ Rectangle{
                         }
                     }
                 }
-
             }
         }
 
@@ -219,7 +218,7 @@ Rectangle{
             repGame.model=ag
 
             //Ultimas palabras
-            sql='select * from hscores order by ms desc limit 10;'
+            sql='select * from hscores where game=\''+app.idGame+'\' order by ms desc limit 10;'
             rows=unik.getSqlData(sql)
             let aup=[]
             for(let i=0;i<rows.length;i++){

@@ -8,6 +8,11 @@ ApplicationWindow {
     id: app
     visible: true
     visibility: "Maximized"
+    //flags: Qt.FramelessWindowHint
+    //width: Screen.width*0.7
+    //height: Screen.height
+    //x:0
+    //y:0
     color: 'black'
     property string moduleName: 'twitchanagrama'
     property int fs: app.width*0.015
@@ -49,59 +54,75 @@ ApplicationWindow {
         id: xApp
         anchors.fill: parent
         Row{
-            XPanelData{id:xPanelData}
-            X1{
-                id: x1
+            XPanelData{
+                id:xPanelData
                 width: xApp.width*0.5
             }
-        }
-        Rectangle{
-            id: xWV
-            width: xApp.width*0.25
-            height: xApp.height
-            state: 'show'
-            property int cantMsgs: 0
-            states: [
-                State {
-                    name: "show"
-                    PropertyChanges {
-                        target: xWV
-                        x: xApp.width-xWV.width
-                    }
-                },
-                State {
-                    name: "hide"
-                    PropertyChanges {
-                        target: xWV
-                        x: xApp.width
-                    }
-                }
-            ]
-            Behavior on x{
-                NumberAnimation{duration: 250;easing.type: Easing.InOutQuad}
+            X1{
+                id: x1
+                width: xApp.width*0.25
             }
-            WebEngineView{
-                id: wv
-                anchors.fill: parent
-                onLoadProgressChanged: {
-                    if(loadProgress===100)tCheck.start()
+            Rectangle{
+                id: xWV
+                width: xApp.width*0.25
+                height: xApp.height
+                //state: 'show'
+//                states: [
+//                    State {
+//                        name: "show"
+//                        PropertyChanges {
+//                            target: xWV
+//                            x: xApp.width-xWV.width
+//                        }
+//                    },
+//                    State {
+//                        name: "hide"
+//                        PropertyChanges {
+//                            target: xWV
+//                            x: xApp.width
+//                        }
+//                    }
+//                ]
+                Behavior on x{
+                    NumberAnimation{duration: 250;easing.type: Easing.InOutQuad}
                 }
-                onJavaScriptDialogRequested: {
-                    //uLogView.showLog('Ventana!')
-                    autoItRequest('Send("{ENTER}")\n')
-                }
-            }
-            XShowSig{
-                id: xShowSig
-                height: parent.height//-app.fs*10
-                onWordIsValidated: {
-                    app.sendToChat('[Juego dice] Palabra actual '+word)
-                }
-                Rectangle{
+                WebEngineView{
+                    id: wv
                     anchors.fill: parent
-                    border.width: 2
-                    border.color: 'red'
-                    color: 'transparent'
+                    onLoadProgressChanged: {
+                        if(loadProgress===100)tCheck.start()
+                    }
+                    onJavaScriptDialogRequested: {
+                        if((''+wv.url).indexOf('twitch.tv')<0&&(''+wv.url).indexOf('/chat')<0)return
+                        autoItRequest('Send("{ENTER}")\n')
+                    }
+                }
+                XShowSig{
+                    id: xShowSig
+                    height: parent.height//-app.fs*10
+                    onWordIsValidated: {
+                        app.sendToChat('[Juego dice] Palabra actual '+word)
+                    }
+                    Rectangle{
+                        anchors.fill: parent
+                        border.width: 2
+                        border.color: 'red'
+                        color: 'transparent'
+                    }
+                }
+                Timer{
+                    id: tSetTiEnabled
+                    running: true
+                    repeat: true
+                    interval: 3000
+                    onTriggered: {
+                        wv.runJavaScript('document.getElementById("root").innerText', function(result) {
+                            if(result.indexOf('CHAT DE LA TRANSMISIÓN')>=0){
+                                sendToChat('Juego conectado al Chat')
+                                stop()
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -171,6 +192,18 @@ ApplicationWindow {
                         if((''+msg).indexOf('chat.whatsapp.com')<0&&(''+mensaje).indexOf('!')!==1){
                             //unik.speak(msg)
                         }
+//                        if(msg.indexOf('Config.')>=0){
+//                            return
+//                        }
+                        if(usuario.indexOf('nextsigner')===0){
+                            //Esto ha detectado bien el usuario que envía el mensaje
+                            //x1.crono.timer.running=!x1.crono.timer.running
+                        }
+                        if(msg.indexOf('Juego conectado al Chat')>=0){
+                            //xWV.state='hide'
+                            //unik.speak('Chat iniciado.')
+                            return
+                        }
                         if(isVM(msg)&&msg.indexOf('[Juego dice]')<0&&msg.indexOf('!r')>=0&&x1.cbe){
                             if(!x1.inTime()){
                                 unik.speak(''+usuario+' responde antes de tiempo.')
@@ -197,8 +230,16 @@ ApplicationWindow {
                                 if(m1.length>=1){
                                     let pf=(''+m1[1]).replace(/_/g, '')
                                     if(pf.indexOf('undefined')>=0)return
-                                    unik.speak(''+usuario+' responde palabra '+pf)
-                                    x1.agregarPalabra(pf, usuario)
+                                    //unik.speak(''+usuario+' responde palabra '+pf)
+                                    if(x1.wordList.isLetterWordValid(pf)){
+                                        x1.agregarPalabra(pf, usuario)
+                                    }else{
+                                        let d=new Date(Date.now())
+                                        let sql='insert into hscores(nickname, palabra, respuesta, game, ms, score)values(\''+usuario+'\',\''+pf+'\',\''+app.cWord+'\',\''+app.idGame+'\', '+d.getTime()+', -1)'
+                                        unik.sqlQuery(sql)
+                                        let m=''+usuario+' ha fallado!'
+                                        x1.wordList.showFail(m)
+                                    }
                                 }
                             }
                         }
@@ -210,7 +251,8 @@ ApplicationWindow {
                             app.visible=true
                         }
                         if(msg.in dexOf(''+app.user)>=0 &&msg.indexOf('hide')>=0){
-                            app.visible=false
+                            app.visible=falseJuego conectado al Chat
+
                         }
                         if(msg.indexOf(''+app.user)>=0 &&msg.indexOf('launch')>=0){
                             Qt.openUrlExternally(app.url)
@@ -281,7 +323,23 @@ ApplicationWindow {
     Shortcut{
         sequence: 'w'
         onActivated: {
-            xWV.state=xWV.state==='show'?'hide':'show'
+            //xWV.state=xWV.state==='show'?'hide':'show'
+            //if(xWV.state==='hide')x1.ti.focus=true
+            //if(xWV.state==='show')wv.focus=true
+        }
+    }
+    Shortcut{
+        sequence: 'p'
+        onActivated: {
+            //x1.crono.timer.running=!x1.crono.timer.running
+            //if(xWV.state==='hide')x1.ti.focus=true
+            //if(xWV.state==='show')wv.focus=true
+        }
+    }
+    Shortcut{
+        sequence: 'i'
+        onActivated: {
+            //x1.ti.focus=true
         }
     }
     Shortcut{
@@ -322,7 +380,7 @@ ApplicationWindow {
         app.visible=true
         //getViewersCount()
 
-        unik.sqliteInit('anagrama.sqlite')
+        unik.sqliteInit('anagrama2.sqlite')
         let sql='CREATE TABLE IF NOT EXISTS scores'
             +'('
             +'id INTEGER PRIMARY KEY AUTOINCREMENT,'
@@ -371,20 +429,26 @@ ApplicationWindow {
 
     function sendToChat(msg){
         clipboard.setText(msg)
-        let posx=1200
-        if(xWV.state==='hide'){
-            posx=1280
-        }
-        let posxR=x1.x+x1.ti.x+x1.ti.width*0.3
-        let posyR=x1.ti.y+x1.ti.parent.height*0.1
+        let posx=xWV.x+100
+//        if(xWV.state==='hide'){
+//            posx=1280
+//        }
+        let posxR=x1.x+x1.ti.x+x1.ti.width*0.4
+        let posyR=x1.ti.y+x1.ti.parent.y+x1.ti.height//*0.5+app.fs
         wv.focus=true
         let s='#include <AutoItConstants.au3>\n'
             +'MouseClick($MOUSE_CLICK_LEFT, '+posx+', 650, 1)\n'
             +'Sleep(100)\n'
-            +'Send("{RCTRL down}v{RCTRL up}")\n'
-            +'Sleep(250)\n'
-            +'Send("{ENTER}")\n'
+            +'Send("{RCTRL down}v{RCTRL up}{ENTER}")\n'
+            //+'Send("{RCTRL up}")\n'
+            +'Sleep(500)\n'
+            // +'Send("{ENTER}")\n'
+            //+'Send("{RCTRL up}")\n'
+            //+'Send("{LCTRL up}")\n'
+            //+'Sleep(100)\n'
             +'MouseClick($MOUSE_CLICK_LEFT, '+posxR+', '+posyR+', 1)\n'
+            //+'Send("{RCTRL down}a{RCTRL up}")\n'
+        //+'Send("{SHIFT}")\n'
         let d=new Date(Date.now())
         let fn=unik.getPath(4)+'/autoit'+d.getTime()+'.au3'
         unik.setFile(fn, s)

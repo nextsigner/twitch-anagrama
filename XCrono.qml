@@ -7,8 +7,9 @@ import "funcs.js" as JS
 Item {
     id: r
     //visible: false
-    width: (xApp.width-x1.width)*0.5
+    width: parent.width-app.fs
     height: col.height+app.fs*2
+    property alias timer: tTempCountDown
     property int h: 0
     property int m: 0
     property int s: 0
@@ -40,16 +41,16 @@ Item {
         id: col
         spacing: app.fs*0.5
         anchors.centerIn: r
-        Row{
-            height: app.fs*2
-            UText{
-                id: labelMode
-                width: r.width-app.fs
-                wrapMode: Text.WordWrap
-                font.pixelSize: app.fs
-                horizontalAlignment: Text.AlignHCenter
-            }
-        }
+//        Row{
+//            height: app.fs*2
+//            UText{
+//                id: labelMode
+//                width: r.width-app.fs
+//                wrapMode: Text.WordWrap
+//                font.pixelSize: app.fs
+//                horizontalAlignment: Text.AlignHCenter
+//            }
+//        }
         Row{
             anchors.horizontalCenter: parent.horizontalCenter
             height: colBotsCrono.height
@@ -110,8 +111,8 @@ Item {
                 Repeater{
                     model: r.countDown?r.arrayTimeCD:r.arrayTime
                     Rectangle{
-                        width: app.fs*6
-                        height: width
+                        width: app.fs*4
+                        height: app.fs*6
                         border.width: r.inTime?unikSettings.borderWidth*2:unikSettings.borderWidth
                         border.color: r.inTime?'red':app.c2
                         radius: app.fs*0.25
@@ -153,14 +154,7 @@ Item {
         id: tTempCountDown
         running: false
         repeat: true
-        interval: 10
-        onRunningChanged: {
-            if(running){
-                app.sendToChat('[Juego dice] Comencemos! ')
-            }else{
-                app.sendToChat('[Juego dice] Stop! ')
-            }
-        }
+        interval: 10        
         onTriggered: {
             if(r.msCD===0){
                 r.msCD=100
@@ -199,7 +193,7 @@ Item {
         if(mf.length===1){
             mf='0'+mf
         }
-        labelMode.text=''+mf+' minutos de tiempo\npara enviar palabras.'
+        //labelMode.text=''+mf+' minutos de tiempo\npara enviar palabras.'
         tTempCountDown.start()
     }
     function setArrayTime(){

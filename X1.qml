@@ -13,8 +13,10 @@ Rectangle {
     border.width: 2
     border.color: 'red'
     clip: true
+    property alias wordList: xL1
     property alias cbe: cbCommandEnabled.checked
     property alias ti: tiMsg
+    property alias crono: xCrono
     Settings{
         id: sX1
         property bool cbCE: false
@@ -22,14 +24,18 @@ Rectangle {
     Column{
         spacing: app.fs*0.5
         anchors.centerIn: r
-        XWordsUsed{id: xWordUsed}
         XWord{id: xWord}
         XCrono{
             id: xCrono
             countDown: true
             anchors.horizontalCenter: parent.horizontalCenter
         }
+        XWordsUsed{
+            id: xWordUsed
+            height: r.height-xWord.height-xCrono.height-tiMsg.height-app.fs*2
+        }
         Row{
+            visible:false
             UText{
                 text: 'Comando !r'
             }
@@ -38,20 +44,37 @@ Rectangle {
                 onCheckedChanged: sX1.cbCE=checked
             }
         }
-        XL1{
-            id: xL1
-            height: r.height-xWord.height-xCrono.height-app.fs*10
-        }
+
         UTextInput{
             id: tiMsg
             label:'Mensage:'
-            width: r.width-app.fs*0.25
+            width: r.width-app.fs
             anchors.horizontalCenter: parent.horizontalCenter
             focus: true
-            onSeted: app.sendToChat(text)
+//            onFocusChanged: {
+//                if(focus){
+//                    textInput.selectAll()
+//                }
+//            }
+            onSeted: {
+                if(text==='')return
+                if(text==='p'){
+                    text=''
+                    if(!x1.crono.timer.running){
+                        x1.wordList.showPoints('Comencemos! ')
+                        x1.crono.timer.running=true
+                    }else{
+                        x1.wordList.showFail('Stop! ')
+                        x1.crono.timer.running=false
+                    }
+                    return
+                }else{
+                    app.sendToChat(text)
+                }
+            }
             Keys.onReturnPressed: {
-                uLogView.showLog('Return pressed!')
-                app.sendToChat(text)
+                //uLogView.showLog('Return pressed!')
+                //app.sendToChat(text)
             }
         }
     }
@@ -60,6 +83,12 @@ Rectangle {
         font.pixelSize: app.fs*0.5
         x: 8
         y:8
+        visible: false
+    }
+    XL1{
+        id: xL1
+        height: r.height-xWord.height-xCrono.height-app.fs*10
+        anchors.top: r.bottom
     }
     Component.onCompleted: {
         cbCommandEnabled.checked=sX1.cbCE

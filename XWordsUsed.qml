@@ -1,97 +1,59 @@
 import QtQuick 2.0
 
-Item {
+Rectangle {
     id: r
     width: parent.width
-    height: app.fs*1.4
+    border.width: 1
+    border.color: app.c2
+    color: 'transparent'
+    //height: app.fs*1.4
     //    SequentialAnimation{
-    //        running: rowWordsUsed.width>r.parent.width
+    //        running: flowWU.width>r.parent.width
     //        loops: Animation.Infinite
     //        NumberAnimation {
     //            id:na1
-    //            target: rowWordsUsed
+    //            target: flowWU
     //            property: "x"
     //            duration: app.wordsUsed.length*1000
     //            //easing.type: Easing.InOutQuad
     //            from: 0
-    //            to: 0-rowWordsUsed.width*0.5-rowWordsUsed.spacing
+    //            to: 0-flowWU.width*0.5-flowWU.spacing
     //        }
     ////        NumberAnimation {
     ////            id:na2
-    ////            target: rowWordsUsed
+    ////            target: flowWU
     ////            property: "x"
-    ////            from: rowWordsUsed.x
+    ////            from: flowWU.x
     ////            to: 0
     ////        }
     //    }
-    Row{
-        id: rowWordsUsed
-        spacing: app.fs
-        Behavior on x{
-            NumberAnimation{duration: 8000}
-        }
-        Repeater{
-            id: repWU
-            model: app.wordsUsed
-            Rectangle{
-                width: labelWord.contentWidth+app.fs
-                height: r.height
-                border.width: 2
-                border.color: app.c2
-                radius: app.fs*0.25
-                color: 'transparent'
-                UText{
-                    id: labelWord
-                    text: modelData
-                    anchors.centerIn: parent
-                }
+    Flickable{
+        id: flWU
+        anchors.fill: r
+        contentWidth: r.width
+        contentHeight: flowWU.height
+        Flow{
+            id: flowWU
+            spacing: app.fs
+            Behavior on x{
+                NumberAnimation{duration: 8000}
             }
-        }
-    }
-    Row{
-        id: rowWordsUsed2
-        spacing: app.fs
-        anchors.left: rowWordsUsed.right
-        anchors.leftMargin: rowWordsUsed.spacing
-        anchors.verticalCenter: rowWordsUsed.verticalCenter
-        Repeater{
-            id: repWU2
-            model: app.wordsUsed
-            Rectangle{
-                width: labelWord2.contentWidth+app.fs
-                height: r.height
-                border.width: 2
-                border.color: app.c2
-                radius: app.fs*0.25
-                color: 'transparent'
-                UText{
-                    id: labelWord2
-                    text: modelData
-                    anchors.centerIn: parent
-                }
-            }
-        }
-    }
-    Row{
-        id: rowWordsUsed3
-        spacing: app.fs
-        anchors.right: rowWordsUsed.left
-        anchors.rightMargin: rowWordsUsed.spacing
-        anchors.verticalCenter: rowWordsUsed.verticalCenter
-        Repeater{
-            id: repWU3
-            model: app.wordsUsed
-            Rectangle{
-                width: labelWord2.contentWidth+app.fs
-                height: r.height
-                border.width: 2
-                border.color: app.c2
-                radius: app.fs*0.25
-                color: 'transparent'
-                UText{
-                    id: labelWord2
-                    text: modelData
-                    anchors.centerIn: parent
+            Repeater{
+                id: repWU
+                model: app.wordsUsed
+                Rectangle{
+                    width: labelWord.contentWidth+app.fs
+                    height: labelWord.height+app.fs*0.2
+                    border.width: 2
+                    border.color: app.c2
+                    radius: app.fs*0.25
+                    color: 'transparent'
+                    UText{
+                        id: labelWord
+                        text: modelData
+                        width: contentWidth
+                        anchors.centerIn: parent
+                    }
                 }
             }
         }
@@ -105,21 +67,11 @@ Item {
         onTriggered: {
             var a=app.wordsUsed
             repWU.model=a
-            repWU2.model=a
-             repWU3.model=a
-
-            if(rowWordsUsed.width<=r.width){
-                rowWordsUsed2.visible=false
-                rowWordsUsed3.visible=false
-                return
+            if(flWU.contentY===0){
+                flWU.contentY=flWU.contentHeight-flWU.height
             }
-            rowWordsUsed2.visible=true
-            rowWordsUsed3.visible=true
-            if(rowWordsUsed.x===0){
-                rowWordsUsed.x=0-rowWordsUsed.width
-            }
-            if(rowWordsUsed.x===0-rowWordsUsed.width){
-                rowWordsUsed.x=0
+            if(flWU.contentY===flWU.contentHeight-flWU.height){
+                flWU.contentY=0
             }
         }
     }

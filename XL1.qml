@@ -74,13 +74,7 @@ Item {
             border.color: 'red'
             color: 'transparent'
         }
-    }
-    Component.onCompleted: {
-        //            lm.append(lm.addItem('aaadsafas a fa', 'aaaa da fasfasd fas as ccccc'))
-        //            lm.append(lm.addItem('aaaa', 'aaaaccccc'))
-        //            lm.append(lm.addItem('aaaa', 'aaaaccccc'))
-        //            lm.append(lm.addItem('aaaa', 'aaaaccccc'))
-    }
+    }  
     Timer{
         id: tcheckIsValid
         running: false
@@ -92,10 +86,33 @@ Item {
             }
         }
     }
-    function wordProccess(w, u){
+
+    function isLetterWordValid(w, u){
         //unik.speak('Procesando '+w)
         let wcorr1=(''+w).replace(/ /g, '').replace(/\n/g, '')
         var i=0
+        //uLogView.showLog('cant: '+JS.contarCaracteres(wcorr1, wcorr1.charAt(1)))
+        for(i=0;i<wcorr1.length;i++){
+            //uLogView.showLog('l'+i+': '+wcorr1.charAt(i))
+            if(app.cWord.indexOf(wcorr1.charAt(i))<0){
+                //unik.speak('Letra '+wcorr1.charAt(i)+' inexistente '+w+' palabra actual '+app.cWord)
+                return false
+            }
+        }
+        for(i=0;i<wcorr1.length;i++){
+            let clu=JS.contarCaracteres(wcorr1, wcorr1.charAt(i))
+            let clapp=JS.contarCaracteres(app.cWord, wcorr1.charAt(i))
+            if(clu>clapp){
+                //unik.speak('Usuario '+u+' se ha excedido de letras '+wcorr1.charAt(i))
+                return false
+            }
+        }
+        return true
+    }
+    function wordProccess(w, u){
+        //unik.speak('Procesando '+w)
+        let wcorr1=(''+w).replace(/ /g, '').replace(/\n/g, '')
+        /*var i=0
         //uLogView.showLog('cant: '+JS.contarCaracteres(wcorr1, wcorr1.charAt(1)))
         for(i=0;i<wcorr1.length;i++){
             //uLogView.showLog('l'+i+': '+wcorr1.charAt(i))
@@ -111,7 +128,7 @@ Item {
                 unik.speak('Usuario '+u+' se ha excedido de letras '+wcorr1.charAt(i))
                 return
             }
-        }
+        }*/
         //uLogView.showLog('Calculando '+wcorr1.length+' de  '+app.cWord.length+' es igual a '+calcularPuntos(wcorr1))
         //unik.speak('Calculando '+wcorr1.length+' de  '+app.cWord.length+' es igual a '+calcularPuntos(wcorr1))
         //unik.speak('Palabra '+w+'de  '+u+' aceptada.')
