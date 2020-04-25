@@ -57,6 +57,12 @@ ApplicationWindow {
             XPanelData{
                 id:xPanelData
                 width: xApp.width*0.75
+                visible: app.idGame!==''
+            }
+            XPanelPrev{
+                id:xPanelPrev
+                width: xApp.width*0.75
+                visible: app.idGame===''
             }
             X1{
                 id: x1
@@ -375,6 +381,7 @@ ApplicationWindow {
         }
     }
     Component.onCompleted: {
+        app.idGame=''
 
         let user=''
         let launch=false

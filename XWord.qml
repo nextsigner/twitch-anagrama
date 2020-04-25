@@ -22,11 +22,11 @@ Rectangle {
         anchors.fill: r
         onClicked: xShowSig.search(app.cWord, 'app', false)
         onDoubleClicked: {
+            app.idGame=''
             app.wordsUsed=[]
             app.wordsUsedBy=[]
             app.cWord=JS.getWord()
             xShowSig.search(app.cWord, 'app', false)
         }
     }
-
 }
