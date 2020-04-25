@@ -13,11 +13,16 @@ Rectangle {
     z:999999
     radius: app.fs*0.5
     property string text
+    onYChanged: {
+        if(y<r.parent.height*0.75){
+            r.opacity=0.0
+        }
+    }
     onOpacityChanged:{
         if(r.opacity===0.0)r.destroy(10)
     }
     Behavior on opacity{
-        NumberAnimation{duration: 5000}
+        NumberAnimation{duration: 2000}
     }
     Behavior on y{
         NumberAnimation{duration: 2000}
@@ -50,6 +55,5 @@ Rectangle {
     }
     Component.onCompleted: {
        r.y=0
-        r.opacity=0.0
     }
 }

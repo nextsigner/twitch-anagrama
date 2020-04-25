@@ -18,13 +18,15 @@ Item {
     property int mCD: 0
     property int sCD: 0
     property int msCD: 0
+    property int fromMCD: 10
     property bool temp: true
     property bool countDown: false
     property var arrayTime: [0,0,0,0]
-    property var arrayTimeCD: [0,0,0]
+    property var arrayTimeCD: [0,0]
     property var arrayName: ['Hora', 'Minutos', 'Segundos', 'Milisegundos']
     property var arrayNameCD: ['Minutos', 'Segundos', 'Milisegundos']
     property bool inTime: tTempCountDown.running
+    property string cIdGame:''
     onMChanged: {
         if(!r.countDown){
             if(m===0){
@@ -46,15 +48,15 @@ Item {
             Repeater{
                 model: r.countDown?r.arrayTimeCD:r.arrayTime
                 Rectangle{
-                    width: r.width/3-app.fs*0.25
-                    height: app.fs*6
+                    width: r.width/2-app.fs*0.25
+                    height: app.fs*7
                     border.width: r.inTime?6:2
                     border.color: r.inTime?'red':app.c2
                     radius: app.fs*0.25
                     color: app.c1
                     UText{
                         text: r.countDown?r.arrayTimeCD[index]:r.arrayTime[index]
-                        font.pixelSize: app.fs*4.5
+                        font.pixelSize: app.fs*7
                         anchors.centerIn: parent
                     }
                     MouseArea{
@@ -111,9 +113,9 @@ Item {
         id: tTempCountDown
         running: false
         repeat: true
-        interval: 10
+        interval: 1000
         onTriggered: {
-            if(r.msCD===0){
+            //if(r.msCD===0){
                 r.msCD=100
                 if(r.sCD===0){
 
@@ -134,14 +136,18 @@ Item {
                 }else{
                     r.sCD--
                 }
-            }else{
-                r.msCD-=1
-            }
+//            }else{
+//                r.msCD-=1
+//            }
             if(!r.countDown){
                 setArrayTime()
             }else{
+//                if(r.mCD===){
+
+//                }
                 setArrayTimeCD()
             }
+            r.cIdGame=app.idGame
         }
     }
     Component.onCompleted: {
@@ -149,6 +155,7 @@ Item {
         //setCountDownInit(2)
     }
     function setCountDownInit(m){
+        r.fromMCD=m
         r.sCD=60
         r.mCD=m-1
         let mf=''+m
@@ -182,16 +189,13 @@ Item {
         }
         a.push(mf)
         a.push(sf)
-        a.push(r.msCD)
+        //a.push(r.msCD)
         r.arrayTimeCD=a
         //uLogView.showLog('a: '+a.toString())
     }
     function toogleCD(){
         if(r.mCD===0&&r.sCD===0){
-
             setCountDownInit(sCrono.minutosCD)
-
-
             var d1=new Date(Date.now())
             let nid=''+d1.getDate()+d1.getMonth()+d1.getFullYear()+d1.getHours()+d1.getMinutes()+d1.getSeconds()
             //uLogView.showLog('nid: '+nid)

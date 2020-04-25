@@ -89,19 +89,33 @@ Item {
 
     function isLetterWordValid(w, u){
         //unik.speak('Procesando '+w)
-        let wcorr1=(''+w).replace(/ /g, '').replace(/\n/g, '')
+        let wcorr1=(''+w).replace(/ /g, '').replace(/\n/g, '').toLowerCase()
         var i=0
+        var cwSA=app.cWord.toLowerCase().replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i').replace(/ó/g, 'o').replace(/u/g, 'ú')
+        //uLogView.showLog('cwSA:['+cwSA+'] wcorr1:['+wcorr1+']')
         //uLogView.showLog('cant: '+JS.contarCaracteres(wcorr1, wcorr1.charAt(1)))
+        let cwCA=false
         for(i=0;i<wcorr1.length;i++){
             //uLogView.showLog('l'+i+': '+wcorr1.charAt(i))
-            if(app.cWord.indexOf(wcorr1.charAt(i))<0){
+            if(app.cWord.indexOf(wcorr1.charAt(i))<0&&cwSA.indexOf(wcorr1.charAt(i))<0){
                 //unik.speak('Letra '+wcorr1.charAt(i)+' inexistente '+w+' palabra actual '+app.cWord)
                 return false
             }
         }
+        for(i=0;i<app.cWord.length;i++){
+            if(app.cWord.charAt(i)==='í'){
+                cwCA=true
+                break
+            }
+        }
         for(i=0;i<wcorr1.length;i++){
             let clu=JS.contarCaracteres(wcorr1, wcorr1.charAt(i))
-            let clapp=JS.contarCaracteres(app.cWord, wcorr1.charAt(i))
+            let clapp
+            if(cwCA){
+                clapp=JS.contarCaracteres(cwSA, wcorr1.charAt(i))
+            }else{
+                clapp=JS.contarCaracteres(app.cWord, wcorr1.charAt(i))
+            }
             if(clu>clapp){
                 //unik.speak('Usuario '+u+' se ha excedido de letras '+wcorr1.charAt(i))
                 return false

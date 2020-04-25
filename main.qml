@@ -7,21 +7,22 @@ import "qrc:/"
 ApplicationWindow {
     id: app
     visible: true
-    visibility: "Maximized"
-    //flags: Qt.FramelessWindowHint
-    //width: Screen.width*0.7
-    //height: Screen.height
-    //x:0
-    //y:0
+    //visibility: "Maximized"
+    flags: Qt.FramelessWindowHint
+    width: 1280+840
+    height: 720
+    x:0
+    y:0
     color: 'black'
     property string moduleName: 'twitchanagrama'
-    property int fs: app.width*0.015
+    property int fs: xApp.width*0.015
     property color c1: 'black'
     property color c2: 'white'
     property color c3: 'gray'
     property color c4: 'red'
     property string uHtml: ''
     property bool voiceEnabled: true
+
     property string user: ''
     property string url: ''
 
@@ -52,7 +53,8 @@ ApplicationWindow {
     }
     Item{
         id: xApp
-        anchors.fill: parent
+        width: 1280
+        height: app.height
         Row{
             XPanelData{
                 id:xPanelData
@@ -71,25 +73,26 @@ ApplicationWindow {
         }
         Rectangle{
             id: xWV
-            width: xApp.width*0.25
+            width: 840
             height: xApp.height
-            state: 'hide'
-            states: [
-                State {
-                    name: "show"
-                    PropertyChanges {
-                        target: xWV
-                        x: xApp.width-xWV.width
-                    }
-                },
-                State {
-                    name: "hide"
-                    PropertyChanges {
-                        target: xWV
-                        x: xApp.width
-                    }
-                }
-            ]
+            x:1280
+            //            state: 'show'
+            //            states: [
+            //                State {
+            //                    name: "show"
+            //                    PropertyChanges {
+            //                        target: xWV
+            //                        x: xApp.width-xWV.width
+            //                    }
+            //                },
+            //                State {
+            //                    name: "hide"
+            //                    PropertyChanges {
+            //                        target: xWV
+            //                        x: xApp.width
+            //                    }
+            //                }
+            //            ]
             Behavior on x{
                 NumberAnimation{duration: 250;easing.type: Easing.InOutQuad}
             }
@@ -174,6 +177,13 @@ ApplicationWindow {
         }
         UWarnings{id: uWarnings}
     }
+    Rectangle{
+        width: 1280
+        height: 720
+        color: 'transparent'
+        border.width: 2
+        border.color: 'red'
+    }
     Timer{
         id:tCheck
         running: false
@@ -212,19 +222,19 @@ ApplicationWindow {
                             app.uHtml=result
                             return
                         }
-//                        if(usuario.indexOf('nextsigner')===0&&mensaje.indexOf('!ts')>=0){
-//                            x1.crono.timer.stop()
-//                            unik.speak('Temporizador detenido.')
-//                            app.uHtml=result
-//                            return
-//                        }
+                        //                        if(usuario.indexOf('nextsigner')===0&&mensaje.indexOf('!ts')>=0){
+                        //                            x1.crono.timer.stop()
+                        //                            unik.speak('Temporizador detenido.')
+                        //                            app.uHtml=result
+                        //                            return
+                        //                        }
                         if(msg.indexOf('Juego conectado al Chat')>=0){
                             //xWV.state='hide'
                             unik.speak('Chat iniciado.')
                             app.uHtml=result
                             return
                         }
-                        if(isVM(msg)&&msg.indexOf('[Juego dice]')<0&&msg.indexOf('!r')>=0&&x1.cbe){
+                        if(isVM(msg)&&msg.indexOf('!r')>=0&&x1.cbe){
                             if(!x1.inTime()){
                                 unik.speak(''+usuario+' responde antes de tiempo.')
                                 //return
@@ -240,15 +250,25 @@ ApplicationWindow {
                                 }
                             }
                         }
-                        if(isVM(msg)&&msg.indexOf('[Juego dice]')<0&&!x1.cbe){
+                        if(isVM(msg)&&!x1.cbe){
                             if(!x1.inTime()){
-                                unik.speak(''+usuario+' responde antes de tiempo.')
+                                unik.speak(msg)
+                                app.uHtml=result
+                                return
+                                //unik.speak(''+usuario+' responde antes de tiempo.')
                                 //return
                             }else{
                                 let m1=mensaje.split(' ')
                                 //uLogView.showLog('m1: '+m1.toString())
                                 if(m1.length>=1){
-                                    let pf=(''+m1[1]).replace(/_/g, '')
+                                    let pf=(''+m1[1]).replace(/_/g, '').replace(/ /g, '').replace(/\n/g, '').replace(/ \r/g, '')
+                                    //uLogView.showLog('pf:['+pf+']['+app.cWord+']')
+                                    if(pf===app.cWord){
+                                        let fmsg='Mal intento de '+usuario+'!\nLa palabra '+pf+' no es válida.'
+                                        x1.wordList.showFail(fmsg)
+                                        app.uHtml=result
+                                        return
+                                    }
                                     if(pf.indexOf('undefined')>=0)return
                                     //unik.speak(''+usuario+' responde palabra '+pf)
                                     if(x1.wordList.isLetterWordValid(pf)){
@@ -291,10 +311,10 @@ ApplicationWindow {
     Shortcut{
         sequence: 'Esc'
         onActivated: {
-//            if(x1.ti.textInput.focus){
-//                xApp.focus=true
-//                return
-//            }
+            //            if(x1.ti.textInput.focus){
+            //                xApp.focus=true
+            //                return
+            //            }
             if(wv.focus){
                 xApp.focus=true
                 return
@@ -452,13 +472,16 @@ ApplicationWindow {
         unik.sqlQuery(sql)
 
         app.maxWordLength=JS.getWordCount()
-        app.cWord=JS.getWord()
+        app.cWord='algarabía'
+        //app.cWord=JS.getWord()
     }
     function isVM(m){
         let s1='Nightbot'
         if(m.indexOf(s1)>=0)return false;
         let s2='StreamElements'
         if(m.indexOf(s2)>=0)return false;
+        let s3='[Juego dice]'
+        if(m.indexOf(s3)>=0)return false;
         return true
     }
     function autoItRequest(c){
@@ -489,7 +512,7 @@ ApplicationWindow {
         //+'Send("{RCTRL up}")\n'
         //+'Send("{LCTRL up}")\n'
         //+'Sleep(100)\n'
-            //+'MouseClick($MOUSE_CLICK_LEFT, '+posxR+', '+posyR+', 1)\n'
+        //+'MouseClick($MOUSE_CLICK_LEFT, '+posxR+', '+posyR+', 1)\n'
         //+'Send("{RCTRL down}a{RCTRL up}")\n'
         //+'Send("{SHIFT}")\n'
         let d=new Date(Date.now())

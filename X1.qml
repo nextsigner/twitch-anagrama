@@ -10,8 +10,8 @@ Rectangle {
     width: xApp.width*0.5
     height: parent.height
     color: app.c1
-//    border.width: 2
-//    border.color: 'red'
+//    border.width: 8
+//    border.color: 'blue'
     clip: true
     property alias wordList: xL1
     property alias cbe: cbCommandEnabled.checked
