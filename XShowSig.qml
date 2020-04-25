@@ -38,9 +38,21 @@ Item {
                     if(result.indexOf(s2)>=0&&result.indexOf(s3)>=0){
                         if(fromList){
                             uw=w
+                            let msg=u+''+w+' no existe!'
+                            let d=new Date(Date.now())
+                            let sql='insert into hscores(nickname, palabra, respuesta, game, ms, score)values(\''+u+'\',\''+w+'\',\''+app.cWord+'\',\''+app.idGame+'\', '+d.getTime()+', -2)'
+                            unik.sqlQuery(sql)
+                            x1.wordList.showFail(msg)
                             wordIsNotValidated(w, u)
+                            return
                         }
                         //unik.speak('Error: '+s1)
+                        if(u==='app'){
+                            //uLogView.showLog('App falla al seleccionar palabra no válida '+w)
+                            unik.speak('Atención! La palabra actual no esta en el diccionario RAE.')
+                            uw=w
+                            return
+                        }
                         let d=new Date(Date.now())
                         let sql='insert into hscores(nickname, palabra, respuesta, game, ms, score)values(\''+u+'\',\''+w+'\',\''+app.cWord+'\',\''+app.idGame+'\', '+d.getTime()+', -1)'
                         unik.sqlQuery(sql)
@@ -53,7 +65,7 @@ Item {
                             uw=w
                             wordIsValidated(w, u)
                         }else{
-                            unik.speak('Mostrando significado de la palabra '+w)
+                            unik.speak('La palabra actual es válida según el diccionario RAE')
                         }
                     }
                     uw=w

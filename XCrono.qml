@@ -68,7 +68,7 @@ Item {
                                 if(r.mCD===0&&r.sCD===0){
                                     setCountDownInit(sCrono.minutosCD)
                                     var d1=new Date(Date.now())
-                                    let nid=''+d1.getDate()+d1.getMonth()+d1.getFullYear()+d1.getHours()+d1.getMinutes()+d1.getSeconds()
+                                    let nid=''+d1.getDate()+d1.getMonth()+d1.getFullYear()+d1.getHours()+d1.getMinutes()+d1.getSeconds()+app.cWord
                                     //uLogView.showLog('nid: '+nid)
                                     app.idGame=nid
                                     tTempCountDown.running=true

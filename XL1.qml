@@ -63,7 +63,7 @@ Item {
             tcheckIsValid.start()
         }
         onWordIsNotValidated: {
-            unik.speak('Palabra '+word+'de  '+user+' rechazada.')
+            //unik.speak('Palabra '+word+'de  '+user+' rechazada.')
             lm.remove(0)
             tcheckIsValid.start()
         }
@@ -146,8 +146,8 @@ Item {
         //uLogView.showLog('Calculando '+wcorr1.length+' de  '+app.cWord.length+' es igual a '+calcularPuntos(wcorr1))
         //unik.speak('Calculando '+wcorr1.length+' de  '+app.cWord.length+' es igual a '+calcularPuntos(wcorr1))
         //unik.speak('Palabra '+w+'de  '+u+' aceptada.')
-        let point=parseFloat(calcularPuntos(wcorr1)).toFixed(2)
-        let msg='<b>'+u+'</b> ha sumado <b>'+point+'</b> puntos!'
+        let point=parseInt(calcularPuntos(wcorr1))
+        let msg='<b>'+u+'  +'+point+'</b>'
         showPoints(msg)
         registrarScore(u, wcorr1, app.cWord, point)
     }

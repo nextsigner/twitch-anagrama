@@ -3,7 +3,7 @@ import QtMultimedia 5.0
 
 Rectangle {
     id: r
-    width: xApp.width*0.3
+    width: l.contentWidth+app.fs
     height: l.contentHeight+app.fs
     x:0//x1.x
     //anchors.right: parent.right
@@ -14,7 +14,7 @@ Rectangle {
     radius: app.fs*0.5
     property string text
     onYChanged: {
-        if(y<r.parent.height*0.75){
+        if(y<r.parent.height*0.1){
             r.opacity=0.0
         }
     }
@@ -42,10 +42,10 @@ Rectangle {
         width: app.fs*5
         height: width
         fillMode: Image.PreserveAspectFit
-        anchors.right: r.left
-        anchors.rightMargin: 0-app.fs*1.5
+        anchors.left: r.right
+        anchors.leftMargin: 0-app.fs
         anchors.verticalCenter: r.verticalCenter
-        rotation: -25
+        rotation: 25
     }
     Audio{
         id: ap

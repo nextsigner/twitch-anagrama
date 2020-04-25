@@ -113,12 +113,23 @@ ApplicationWindow {
                 onWordIsValidated: {
                     //app.sendToChat('[Juego dice] Palabra actual '+word)
                 }
-                Rectangle{
-                    anchors.fill: parent
-                    border.width: 2
-                    border.color: 'red'
-                    color: 'transparent'
-                }
+                state: 'hide'
+                states: [
+                    State {
+                        name: "show"
+                        PropertyChanges {
+                            target: xShowSig
+                            x: 0
+                        }
+                    },
+                    State {
+                        name: "hide"
+                        PropertyChanges {
+                            target: xShowSig
+                            x: xShowSig.parent.width
+                        }
+                    }
+                ]
             }
             Timer{
                 id: tSetTiEnabled
@@ -219,6 +230,9 @@ ApplicationWindow {
                         }
                         if(usuario.indexOf('nextsigner')===0&&mensaje.indexOf('!t')>=0){
                             x1.crono.toogleCD()
+                            if(x1.crono.timer.running){
+
+                            }
                             app.uHtml=result
                             return
                         }
@@ -472,7 +486,7 @@ ApplicationWindow {
         unik.sqlQuery(sql)
 
         app.maxWordLength=JS.getWordCount()
-        app.cWord='algarabía'
+        app.cWord='manoteado'
         //app.cWord=JS.getWord()
     }
     function isVM(m){

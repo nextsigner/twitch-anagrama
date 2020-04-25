@@ -72,7 +72,7 @@ Rectangle{
                     border.width: 2
                     border.color: app.c2
                     radius: app.fs*0.25
-                    color: (''+modelData).indexOf('falló')>=0?'red':'green'
+                    color: (''+modelData).indexOf('falló')>=0||(''+modelData).indexOf('no existe')>=0?'red':'green'
                     UText{
                         id: txtUP
                         text:  modelData//.indexOf('-1pts')<0?modelData:'palabra no válida.'//(''+modelData).replace('-1pts', 'palabra no válida.')
@@ -179,6 +179,8 @@ Rectangle{
             if(rows[i].col[1]!=='app'){
                 if(parseInt(rows[i].col[6])===-1){
                     cad= '<b>'+rows[i].col[1]+'</b> falló con la palabra <b>"'+rows[i].col[2]+'"</b>'
+                }else if(parseInt(rows[i].col[6])===-2){
+                    cad= '<b>'+rows[i].col[1]+'</b> ingresó palabra <b>"'+rows[i].col[2]+'"</b> que no existe'
                 }else{
                     cad='<b>'+rows[i].col[1]+'</b>  +'+parseInt(rows[i].col[6])+' <b>"'+rows[i].col[2]+'"</b>'
                 }

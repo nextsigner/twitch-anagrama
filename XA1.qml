@@ -3,7 +3,7 @@ import QtMultimedia 5.0
 
 Rectangle {
     id: r
-    width: xApp.width*0.3
+    width: l.contentWidth+app.fs
     height: l.contentHeight+app.fs
     x:0//x1.x
     //anchors.right: parent.right
@@ -14,6 +14,11 @@ Rectangle {
     property string text
     onOpacityChanged:{
         if(r.opacity===0.0)r.destroy(10)
+    }
+    onYChanged: {
+        if(y<r.parent.height*0.1){
+            r.opacity=0.0
+        }
     }
     Behavior on opacity{
         NumberAnimation{duration: 5000}
@@ -36,10 +41,10 @@ Rectangle {
         width: app.fs*5
         height: width
         fillMode: Image.PreserveAspectFit
-        anchors.right: r.left
-        anchors.rightMargin: 0-app.fs*1.5
+        anchors.left: r.right
+        anchors.leftMargin: app.fs
         anchors.verticalCenter: r.verticalCenter
-        rotation: -25
+        rotation: 25
     }
     Audio{
         id: ap
@@ -49,6 +54,5 @@ Rectangle {
     }
     Component.onCompleted: {
        r.y=0
-        r.opacity=0.0
     }
 }
