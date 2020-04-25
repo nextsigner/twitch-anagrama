@@ -5,7 +5,8 @@ Rectangle {
     id: r
     width: xApp.width*0.3
     height: l.contentHeight+app.fs
-    anchors.right: parent.right
+    x:0//x1.x
+    //anchors.right: parent.right
     color: 'green'
     opacity: 1.0
     z:999999

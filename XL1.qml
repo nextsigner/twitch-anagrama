@@ -188,6 +188,8 @@ Item {
             //console.log(sql)
             unik.sqlQuery(sql)
         }
+        xPanelData.timer.restart()
+        xPanelData.upDateData()
     }
     function showFail(w){
         let comp=Qt.createComponent("XE1.qml")

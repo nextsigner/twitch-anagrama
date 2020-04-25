@@ -154,13 +154,13 @@ ApplicationWindow {
                 });
             }
         }
-        BotonUX{
-            text: 'Enviar'
-            z: uLogView.z+1
-            onClicked: {
-                sendToChat('Probando')
-            }
-        }
+//        BotonUX{
+//            text: 'Enviar'
+//            z: uLogView.z+1
+//            onClicked: {
+//                sendToChat('Probando')
+//            }
+//        }
         ULogView{
             id: uLogView
             width: parent.width*0.5
@@ -239,6 +239,8 @@ ApplicationWindow {
                                         unik.sqlQuery(sql)
                                         let m=''+usuario+' ha fallado!'
                                         x1.wordList.showFail(m)
+                                        xPanelData.timer.restart()
+                                        xPanelData.upDateData()
                                     }
                                 }
                             }
@@ -439,7 +441,7 @@ ApplicationWindow {
 //        if(xWV.state==='hide'){
 //            posx=1280
 //        }
-        let posxR=x1.x+x1.ti.x+x1.ti.width*0.4
+        let posxR=x1.x+x1.ti.x+x1.ti.width-app.fs
         let posyR=x1.ti.y+x1.ti.parent.y+x1.ti.height//*0.5+app.fs
         wv.focus=true
         let s='#include <AutoItConstants.au3>\n'

@@ -40,7 +40,14 @@ Item {
                             uw=w
                             wordIsNotValidated(w, u)
                         }
-                        unik.speak('Error: '+s1)
+                        //unik.speak('Error: '+s1)
+                        let d=new Date(Date.now())
+                        let sql='insert into hscores(nickname, palabra, respuesta, game, ms, score)values(\''+u+'\',\''+w+'\',\''+app.cWord+'\',\''+app.idGame+'\', '+d.getTime()+', -1)'
+                        unik.sqlQuery(sql)
+                        let m=''+u+' ha fallado!'
+                        x1.wordList.showFail(m)
+                        xPanelData.timer.restart()
+                        xPanelData.upDateData()
                     }else{
                         if(fromList){
                             uw=w

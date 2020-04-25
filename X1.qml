@@ -51,11 +51,11 @@ Rectangle {
             width: r.width-app.fs
             anchors.horizontalCenter: parent.horizontalCenter
             focus: true
-//            onFocusChanged: {
-//                if(focus){
-//                    textInput.selectAll()
-//                }
-//            }
+            textInput.onFocusChanged: {
+                if(textInput.focus){
+                    textInput.selectAll()
+                }
+            }
             onSeted: {
                 if(text==='')return
                 if(text==='p'){

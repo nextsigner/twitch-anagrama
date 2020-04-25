@@ -5,6 +5,7 @@ Rectangle{
     width: xApp.width*0.5
     height: xApp.height
     color: app.c1
+    property alias timer: ud
     Column{
         spacing: app.fs
         anchors.horizontalCenter: r.horizontalCenter
@@ -112,12 +113,13 @@ Rectangle{
                         color: (''+modelData).indexOf('-1pts')>=0?'red':'green'
                         UText{
                             id: txtUP
-                            text:  (''+modelData).indexOf('-1pts')<0?modelData:(''+modelData).replace('-1pts', 'palabra no válida.')
+                            text:  (''+modelData).indexOf('-1pts')<0?modelData:'palabra no válida.'//(''+modelData).replace('-1pts', 'palabra no válida.')
                             font.pixelSize: app.fs*2
                             width: parent.width-app.fs
                             wrapMode: Text.WordWrap
                             horizontalAlignment: Text.AlignHCenter
                             anchors.centerIn: parent
+                            color: 'white'
                         }
                     }
                 }
@@ -144,94 +146,77 @@ Rectangle{
     }
 
     Timer{
+        id: ud
         running: true
         repeat: true
         interval: 2000
         onTriggered: {
-//            let sql='select * from scores order by score desc limit 5;'
-//            let rows=unik.getSqlData(sql)
-//            let a1=[]
-//            let a2=[]
-//            for(let i=0;i<rows.length;i++){
-//                if(i===0){
-//                    //x1.winScore=rows[i].col[2]
-//                }
-//                if(i===4){
-//                    //x1.winLastScore=rows[i].col[2]
-//                }
-//                a1.push(rows[i].col[1])
-//                a2.push(rows[i].col[4])
-//            }
-//            r.a1=a1
-//            r.a2=a2
-//            repHS.model=a1
-
-            let sql='select * from hscores order by score desc limit 1;'
-            let rows=unik.getSqlData(sql)
-            //uLogView.showLog('rows: '+rows.length)
-            if(rows.length>0){
-                let u=rows[0].col[1]
-                let p=rows[0].col[2]
-                let r=rows[0].col[3]
-                let f=rows[0].col[4]
-                let s=rows[0].col[5]
-                let d=new Date(parseInt(f))
-                let h=''+d.getHours()
-                if(h.length===1){
-                    h='0'+h
-                }
-                let m=''+d.getMinutes()
-                if(m.length===1){
-                    m='0'+m
-                }
-                let sec=''+d.getSeconds()
-                if(sec.length===1){
-                    sec='0'+sec
-                }
-                let dia=''+d.getDate()
-                if(dia.length===1){
-                    dia='0'+dia
-                }
-                let mes=''+d.getMonth()+1
-                if(mes.length===1){
-                    mes='0'+mes
-                }
-                let anio=d.getFullYear()
-                let fecha=' el día '+dia+'/'+mes+'/'+anio+' a las '+h+':'+m+':'+s+' GMT -3'
-                //labelHScore.text='<b>Record: </b> El usuario '+u+' obtuvo '+s+' puntos con la palabra '+r+' y obtenida de la palabra '+p+' '+fecha
-            }
-
-            //Puntajes de Juego Actual
-            //sql='select * from games where game=\''+app.idGame+'\' order by points desc limit 5;'
-            sql='SELECT DISTINCT nickname, points from games WHERE game=\''+app.idGame+'\' ORDER by points DESC'
-            rows=unik.getSqlData(sql)
-            let ag=[]
-            let uag=[]
-            for(let i=0;i<rows.length;i++){
-                if(uag.indexOf(rows[i].col[0])<0){
-                    let cadg='<b>'+rows[i].col[0]+'</b> '+parseInt(rows[i].col[1])+'pts'
-                    ag.push(cadg)
-                    uag.push(rows[i].col[0])
-                }
-            }
-            //console.log('::::::::::::::::::::::::::::ag:'+ag.toString())
-            repGame.model=ag
-
-            //Ultimas palabras
-            sql='select * from hscores where game=\''+app.idGame+'\' order by ms desc limit 10;'
-            rows=unik.getSqlData(sql)
-            let aup=[]
-            for(let i=0;i<rows.length;i++){
-                let cad='<b>'+rows[i].col[1]+'</b> sumó '+rows[i].col[6]+'pts con la palabra <b>"'+rows[i].col[2]+'"</b> en <b>"'+rows[i].col[3]+'"</b>'
-                aup.push(cad)
-            }
-            repUP.model=aup
+            upDateData()
         }
     }
     property var objData: ({})
     property var a1: []
     property var a2: []
-    //    Component.onCompleted: {
+    function upDateData(){
+        let sql='select * from hscores order by score desc limit 1;'
+        let rows=unik.getSqlData(sql)
+        //uLogView.showLog('rows: '+rows.length)
+        if(rows.length>0){
+            let u=rows[0].col[1]
+            let p=rows[0].col[2]
+            let r=rows[0].col[3]
+            let f=rows[0].col[4]
+            let s=rows[0].col[5]
+            let d=new Date(parseInt(f))
+            let h=''+d.getHours()
+            if(h.length===1){
+                h='0'+h
+            }
+            let m=''+d.getMinutes()
+            if(m.length===1){
+                m='0'+m
+            }
+            let sec=''+d.getSeconds()
+            if(sec.length===1){
+                sec='0'+sec
+            }
+            let dia=''+d.getDate()
+            if(dia.length===1){
+                dia='0'+dia
+            }
+            let mes=''+d.getMonth()+1
+            if(mes.length===1){
+                mes='0'+mes
+            }
+            let anio=d.getFullYear()
+            let fecha=' el día '+dia+'/'+mes+'/'+anio+' a las '+h+':'+m+':'+s+' GMT -3'
+            //labelHScore.text='<b>Record: </b> El usuario '+u+' obtuvo '+s+' puntos con la palabra '+r+' y obtenida de la palabra '+p+' '+fecha
+        }
 
-    //    }
+        //Puntajes de Juego Actual
+        //sql='select * from games where game=\''+app.idGame+'\' order by points desc limit 5;'
+        sql='SELECT DISTINCT nickname, points from games WHERE game=\''+app.idGame+'\' ORDER by points DESC'
+        rows=unik.getSqlData(sql)
+        let ag=[]
+        let uag=[]
+        for(let i=0;i<rows.length;i++){
+            if(uag.indexOf(rows[i].col[0])<0){
+                let cadg='<b>'+rows[i].col[0]+'</b> '+parseInt(rows[i].col[1])+'pts'
+                ag.push(cadg)
+                uag.push(rows[i].col[0])
+            }
+        }
+        //console.log('::::::::::::::::::::::::::::ag:'+ag.toString())
+        repGame.model=ag
+
+        //Ultimas palabras
+        sql='select * from hscores where game=\''+app.idGame+'\' order by ms desc limit 10;'
+        rows=unik.getSqlData(sql)
+        let aup=[]
+        for(let i=0;i<rows.length;i++){
+            let cad='<b>'+rows[i].col[1]+'</b> sumó '+parseInt(rows[i].col[6])+'pts con la palabra <b>"'+rows[i].col[2]+'"</b> en <b>"'+rows[i].col[3]+'"</b>'
+            aup.push(cad)
+        }
+        repUP.model=aup
+    }
 }
