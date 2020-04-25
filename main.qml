@@ -56,76 +56,77 @@ ApplicationWindow {
         Row{
             XPanelData{
                 id:xPanelData
-                width: xApp.width*0.5
+                width: xApp.width*0.75
             }
             X1{
                 id: x1
                 width: xApp.width*0.25
             }
-            Rectangle{
-                id: xWV
-                width: xApp.width*0.25
-                height: xApp.height
-                //state: 'show'
-//                states: [
-//                    State {
-//                        name: "show"
-//                        PropertyChanges {
-//                            target: xWV
-//                            x: xApp.width-xWV.width
-//                        }
-//                    },
-//                    State {
-//                        name: "hide"
-//                        PropertyChanges {
-//                            target: xWV
-//                            x: xApp.width
-//                        }
-//                    }
-//                ]
-                Behavior on x{
-                    NumberAnimation{duration: 250;easing.type: Easing.InOutQuad}
+        }
+        Rectangle{
+            id: xWV
+            width: xApp.width*0.25
+            height: xApp.height
+            state: 'hide'
+            states: [
+                State {
+                    name: "show"
+                    PropertyChanges {
+                        target: xWV
+                        x: xApp.width-xWV.width
+                    }
+                },
+                State {
+                    name: "hide"
+                    PropertyChanges {
+                        target: xWV
+                        x: xApp.width
+                    }
                 }
-                WebEngineView{
-                    id: wv
+            ]
+            Behavior on x{
+                NumberAnimation{duration: 250;easing.type: Easing.InOutQuad}
+            }
+            WebEngineView{
+                id: wv
+                anchors.fill: parent
+                onLoadProgressChanged: {
+                    if(loadProgress===100)tCheck.start()
+                }
+                onJavaScriptDialogRequested: {
+                    if((''+wv.url).indexOf('twitch.tv')<0&&(''+wv.url).indexOf('/chat')<0)return
+                    autoItRequest('Send("{ENTER}")\n')
+                }
+            }
+            XShowSig{
+                id: xShowSig
+                height: parent.height//-app.fs*10
+                onWordIsValidated: {
+                    //app.sendToChat('[Juego dice] Palabra actual '+word)
+                }
+                Rectangle{
                     anchors.fill: parent
-                    onLoadProgressChanged: {
-                        if(loadProgress===100)tCheck.start()
-                    }
-                    onJavaScriptDialogRequested: {
-                        if((''+wv.url).indexOf('twitch.tv')<0&&(''+wv.url).indexOf('/chat')<0)return
-                        autoItRequest('Send("{ENTER}")\n')
-                    }
+                    border.width: 2
+                    border.color: 'red'
+                    color: 'transparent'
                 }
-                XShowSig{
-                    id: xShowSig
-                    height: parent.height//-app.fs*10
-                    onWordIsValidated: {
-                        app.sendToChat('[Juego dice] Palabra actual '+word)
-                    }
-                    Rectangle{
-                        anchors.fill: parent
-                        border.width: 2
-                        border.color: 'red'
-                        color: 'transparent'
-                    }
-                }
-                Timer{
-                    id: tSetTiEnabled
-                    running: true
-                    repeat: true
-                    interval: 3000
-                    onTriggered: {
-                        wv.runJavaScript('document.getElementById("root").innerText', function(result) {
-                            if(result.indexOf('CHAT DE LA TRANSMISIÓN')>=0){
-                                sendToChat('Juego conectado al Chat')
-                                stop()
-                            }
-                        });
-                    }
+            }
+            Timer{
+                id: tSetTiEnabled
+                running: true
+                repeat: true
+                interval: 3000
+                onTriggered: {
+                    wv.runJavaScript('document.getElementById("root").innerText', function(result) {
+                        if(result.indexOf('CHAT DE LA TRANSMISIÓN')>=0){
+                            sendToChat('Juego conectado al Chat')
+                            stop()
+                        }
+                    });
                 }
             }
         }
+
         Timer{
             id: ts
             running: false
@@ -154,13 +155,13 @@ ApplicationWindow {
                 });
             }
         }
-//        BotonUX{
-//            text: 'Enviar'
-//            z: uLogView.z+1
-//            onClicked: {
-//                sendToChat('Probando')
-//            }
-//        }
+        //        BotonUX{
+        //            text: 'Enviar'
+        //            z: uLogView.z+1
+        //            onClicked: {
+        //                sendToChat('Probando')
+        //            }
+        //        }
         ULogView{
             id: uLogView
             width: parent.width*0.5
@@ -192,16 +193,29 @@ ApplicationWindow {
                         if((''+msg).indexOf('chat.whatsapp.com')<0&&(''+mensaje).indexOf('!')!==1){
                             //unik.speak(msg)
                         }
-//                        if(msg.indexOf('Config.')>=0){
+                        //                        if(msg.indexOf('Config.')>=0){
+                        //                            return
+                        //                        }
+
+                        if(!isVM(usuario)){
+                            app.uHtml=result
+                            return
+                        }
+                        if(usuario.indexOf('nextsigner')===0&&mensaje.indexOf('!t')>=0){
+                            x1.crono.toogleCD()
+                            app.uHtml=result
+                            return
+                        }
+//                        if(usuario.indexOf('nextsigner')===0&&mensaje.indexOf('!ts')>=0){
+//                            x1.crono.timer.stop()
+//                            unik.speak('Temporizador detenido.')
+//                            app.uHtml=result
 //                            return
 //                        }
-                        if(usuario.indexOf('nextsigner')===0){
-                            //Esto ha detectado bien el usuario que envía el mensaje
-                            //x1.crono.timer.running=!x1.crono.timer.running
-                        }
                         if(msg.indexOf('Juego conectado al Chat')>=0){
                             //xWV.state='hide'
-                            //unik.speak('Chat iniciado.')
+                            unik.speak('Chat iniciado.')
+                            app.uHtml=result
                             return
                         }
                         if(isVM(msg)&&msg.indexOf('[Juego dice]')<0&&msg.indexOf('!r')>=0&&x1.cbe){
@@ -271,10 +285,10 @@ ApplicationWindow {
     Shortcut{
         sequence: 'Esc'
         onActivated: {
-            if(x1.ti.textInput.focus){
-                xApp.focus=true
-                return
-            }
+//            if(x1.ti.textInput.focus){
+//                xApp.focus=true
+//                return
+//            }
             if(wv.focus){
                 xApp.focus=true
                 return
@@ -361,6 +375,7 @@ ApplicationWindow {
         }
     }
     Component.onCompleted: {
+
         let user=''
         let launch=false
         let args = Qt.application.arguments
@@ -417,6 +432,17 @@ ApplicationWindow {
                 +'points NUMERIC NOT NULL'
                 +')'
         unik.sqlQuery(sql)
+        sql='CREATE TABLE IF NOT EXISTS gameswins'
+                +'('
+                +'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+                +'nickname TEXT NOT NULL,'
+                +'word TEXT NOT NULL,'
+                +'userwords TEXT NOT NULL,'
+                +'allwords TEXT NOT NULL,'
+                +'points NUMERIC NOT NULL,'
+                +'ms NUMERIC NOT NULL'
+                +')'
+        unik.sqlQuery(sql)
 
         app.maxWordLength=JS.getWordCount()
         app.cWord=JS.getWord()
@@ -424,6 +450,8 @@ ApplicationWindow {
     function isVM(m){
         let s1='Nightbot'
         if(m.indexOf(s1)>=0)return false;
+        let s2='StreamElements'
+        if(m.indexOf(s2)>=0)return false;
         return true
     }
     function autoItRequest(c){
@@ -437,25 +465,25 @@ ApplicationWindow {
 
     function sendToChat(msg){
         clipboard.setText(msg)
-        let posx=xWV.x+100
-//        if(xWV.state==='hide'){
-//            posx=1280
-//        }
-        let posxR=x1.x+x1.ti.x+x1.ti.width-app.fs
-        let posyR=x1.ti.y+x1.ti.parent.y+x1.ti.height//*0.5+app.fs
+        let posx=xApp.width+100
+        //        if(xWV.state==='hide'){
+        //            posx=1280
+        //        }
+        //let posxR=x1.x+x1.ti.x+x1.ti.width-app.fs
+        //let posyR=x1.ti.y+x1.ti.parent.y+x1.ti.height//*0.5+app.fs
         wv.focus=true
         let s='#include <AutoItConstants.au3>\n'
             +'MouseClick($MOUSE_CLICK_LEFT, '+posx+', 650, 1)\n'
             +'Sleep(100)\n'
             +'Send("{RCTRL down}v{RCTRL up}{ENTER}")\n'
-            //+'Send("{RCTRL up}")\n'
+        //+'Send("{RCTRL up}")\n'
             +'Sleep(500)\n'
-            // +'Send("{ENTER}")\n'
-            //+'Send("{RCTRL up}")\n'
-            //+'Send("{LCTRL up}")\n'
-            //+'Sleep(100)\n'
-            +'MouseClick($MOUSE_CLICK_LEFT, '+posxR+', '+posyR+', 1)\n'
-            //+'Send("{RCTRL down}a{RCTRL up}")\n'
+        // +'Send("{ENTER}")\n'
+        //+'Send("{RCTRL up}")\n'
+        //+'Send("{LCTRL up}")\n'
+        //+'Sleep(100)\n'
+            //+'MouseClick($MOUSE_CLICK_LEFT, '+posxR+', '+posyR+', 1)\n'
+        //+'Send("{RCTRL down}a{RCTRL up}")\n'
         //+'Send("{SHIFT}")\n'
         let d=new Date(Date.now())
         let fn=unik.getPath(4)+'/autoit'+d.getTime()+'.au3'

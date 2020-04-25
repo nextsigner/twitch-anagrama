@@ -8,7 +8,7 @@ Item {
     id: r
     //visible: false
     width: parent.width-app.fs
-    height: col.height+app.fs*2
+    height: app.fs*6
     property alias timer: tTempCountDown
     property int h: 0
     property int m: 0
@@ -37,97 +37,54 @@ Item {
         id: sCrono
         property int minutosCD: 10
     }
-    Column{
-        id: col
-        spacing: app.fs*0.5
-        anchors.centerIn: r
-//        Row{
-//            height: app.fs*2
-//            UText{
-//                id: labelMode
-//                width: r.width-app.fs
-//                wrapMode: Text.WordWrap
-//                font.pixelSize: app.fs
-//                horizontalAlignment: Text.AlignHCenter
-//            }
-//        }
-        Row{
-            anchors.horizontalCenter: parent.horizontalCenter
-            height: colBotsCrono.height
-            Column{
-                id: colBotsCrono
-                width: app.fs*2
-                Boton{
-                    w:app.fs*2
-                    h:w
-                    d:'d'
-                    t:!tTempCountDown.running?'\uf04b':'\uf04c'
-                    c:app.c1
-                    b:app.c2
-                    onClicking: {
-                        if(r.mCD===0&&r.sCD===0){
-                                setCountDownInit(sCrono.minutosCD)
-                                var d1=new Date(Date.now())
-                                let nid=''+d1.getDate()+d1.getMonth()+d1.getFullYear()+d1.getHours()+d1.getMinutes()+d1.getSeconds()
-                                //uLogView.showLog('nid: '+nid)
-                                app.idGame=nid
-                                tTempCountDown.running=true
-                        }else{
-                            tTempCountDown.running=!tTempCountDown.running
-                        }
 
+    Column{
+        anchors.centerIn: r
+        Row{
+            anchors.centerIn: r
+            spacing: app.fs*0.25
+            Repeater{
+                model: r.countDown?r.arrayTimeCD:r.arrayTime
+                Rectangle{
+                    width: r.width/3-app.fs*0.25
+                    height: app.fs*6
+                    border.width: r.inTime?6:2
+                    border.color: r.inTime?'red':app.c2
+                    radius: app.fs*0.25
+                    color: app.c1
+                    UText{
+                        text: r.countDown?r.arrayTimeCD[index]:r.arrayTime[index]
+                        font.pixelSize: app.fs*4.5
+                        anchors.centerIn: parent
                     }
-                }
-                Boton{
-                    w:app.fs*2
-                    h:w
-                    d:'d'
-                    t:'\uf04d'
-                    c:app.c1
-                    b:app.c2
-                    onClicking: {
-                        app.idGame=0
-                        tTempCountDown.stop()
-                        r.mCD=0
-                        r.sCD=0
-                        r.msCD=0
-                        setArrayTimeCD()
-                    }
-                }
-                Boton{
-                    w:app.fs*2
-                    h:w
-                    d:'d'
-                    t:'S'
-                    c:app.c1
-                    b:app.c2
-                    onClicking: {
-                            rowSBMinCD.visible=!rowSBMinCD.visible
-                    }
-                }
-            }
-            Row{
-                anchors.centerIn: r
-                Repeater{
-                    model: r.countDown?r.arrayTimeCD:r.arrayTime
-                    Rectangle{
-                        width: app.fs*4
-                        height: app.fs*6
-                        border.width: r.inTime?unikSettings.borderWidth*2:unikSettings.borderWidth
-                        border.color: r.inTime?'red':app.c2
-                        radius: app.fs*0.25
-                        color: app.c1
-                        UText{
-                            text: r.countDown?r.arrayNameCD[index]:r.arrayName[index]
-                            font.pixelSize: app.fs*0.6
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.top: parent.top
-                            anchors.topMargin: app.fs*0.5
-                        }
-                        UText{
-                            text: r.countDown?r.arrayTimeCD[index]:r.arrayTime[index]
-                            font.pixelSize: app.fs*2.5
-                            anchors.centerIn: parent
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: {
+                            //uLogView.showLog('-0')
+                            if(index===0){
+                                //uLogView.showLog('0')
+                                if(r.mCD===0&&r.sCD===0){
+                                    setCountDownInit(sCrono.minutosCD)
+                                    var d1=new Date(Date.now())
+                                    let nid=''+d1.getDate()+d1.getMonth()+d1.getFullYear()+d1.getHours()+d1.getMinutes()+d1.getSeconds()
+                                    //uLogView.showLog('nid: '+nid)
+                                    app.idGame=nid
+                                    tTempCountDown.running=true
+                                }else{
+                                    tTempCountDown.running=!tTempCountDown.running
+                                }
+                            }
+                            if(index===1){
+                                app.idGame=0
+                                tTempCountDown.stop()
+                                r.mCD=0
+                                r.sCD=0
+                                r.msCD=0
+                                setArrayTimeCD()
+                            }
+                            if(index===2){
+                                rowSBMinCD.visible=!rowSBMinCD.visible
+                            }
                         }
                     }
                 }
@@ -154,12 +111,17 @@ Item {
         id: tTempCountDown
         running: false
         repeat: true
-        interval: 10        
+        interval: 10
         onTriggered: {
             if(r.msCD===0){
                 r.msCD=100
                 if(r.sCD===0){
+
+                    //Probar con poco tiempo
+                    //if(r.mCD===0&&r.sCD<40){
                     if(r.mCD===0&&r.sCD===0){
+                        unik.speak('Tiempo finalizado.')
+                        xPanelData.showWinner()
                         stop()
                         return
                     }
@@ -223,5 +185,26 @@ Item {
         a.push(r.msCD)
         r.arrayTimeCD=a
         //uLogView.showLog('a: '+a.toString())
+    }
+    function toogleCD(){
+        if(r.mCD===0&&r.sCD===0){
+
+            setCountDownInit(sCrono.minutosCD)
+
+
+            var d1=new Date(Date.now())
+            let nid=''+d1.getDate()+d1.getMonth()+d1.getFullYear()+d1.getHours()+d1.getMinutes()+d1.getSeconds()
+            //uLogView.showLog('nid: '+nid)
+            app.idGame=nid
+            tTempCountDown.running=true
+            unik.speak('Temporizador iniciado.')
+        }else{
+            tTempCountDown.running=!tTempCountDown.running
+            if(tTempCountDown.running){
+                unik.speak('Temporizador iniciado.')
+            }else{
+                unik.speak('Temporizador detenido.')
+            }
+        }
     }
 }

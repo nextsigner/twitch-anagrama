@@ -7,7 +7,7 @@ Rectangle {
     border.color: app.c2
     color: 'transparent'
     clip: true
-    property int fs: app.fs*2
+    property int fs: app.fs*4
     Item{
         id: xwu
         anchors.fill: r

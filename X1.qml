@@ -10,12 +10,12 @@ Rectangle {
     width: xApp.width*0.5
     height: parent.height
     color: app.c1
-    border.width: 2
-    border.color: 'red'
+//    border.width: 2
+//    border.color: 'red'
     clip: true
     property alias wordList: xL1
     property alias cbe: cbCommandEnabled.checked
-    property alias ti: tiMsg
+    //property alias ti: tiMsg
     property alias crono: xCrono
     Settings{
         id: sX1
@@ -27,12 +27,13 @@ Rectangle {
         XWord{id: xWord}
         XCrono{
             id: xCrono
+            width: r.width
             countDown: true
             anchors.horizontalCenter: parent.horizontalCenter
         }
         XWordsUsed{
             id: xWordUsed
-            height: r.height-xWord.height-xCrono.height-tiMsg.height-app.fs*2
+            height: r.height-xWord.height-xCrono.height-app.fs*2//-tiMsg.height
         }
         Row{
             visible:false
@@ -45,38 +46,39 @@ Rectangle {
             }
         }
 
-        UTextInput{
-            id: tiMsg
-            label:'Mensage:'
-            width: r.width-app.fs
-            anchors.horizontalCenter: parent.horizontalCenter
-            focus: true
-            textInput.onFocusChanged: {
-                if(textInput.focus){
-                    textInput.selectAll()
-                }
-            }
-            onSeted: {
-                if(text==='')return
-                if(text==='p'){
-                    text=''
-                    if(!x1.crono.timer.running){
-                        x1.wordList.showPoints('Comencemos! ')
-                        x1.crono.timer.running=true
-                    }else{
-                        x1.wordList.showFail('Stop! ')
-                        x1.crono.timer.running=false
-                    }
-                    return
-                }else{
-                    app.sendToChat(text)
-                }
-            }
-            Keys.onReturnPressed: {
-                //uLogView.showLog('Return pressed!')
-                //app.sendToChat(text)
-            }
-        }
+//        UTextInput{
+//            id: tiMsg
+//            label:'Mensage:'
+//            width: r.width-app.fs
+//            anchors.horizontalCenter: parent.horizontalCenter
+//            focus: true
+//            textInput.onFocusChanged: {
+//                if(textInput.focus){
+//                    textInput.selectAll()
+//                }
+//            }
+//            onSeted: {
+//                if(text==='')return
+//                if(text==='p'){
+//                    text=''
+//                    if(!x1.crono.timer.running){
+//                        x1.wordList.showPoints('Comencemos! ')
+//                        x1.crono.timer.running=true
+//                    }else{
+//                        x1.wordList.showFail('Stop! ')
+//                        x1.crono.timer.running=false
+//                    }
+//                    return
+//                }else{
+//                    app.sendToChat(text)
+//                }
+//            }
+//            Keys.onReturnPressed: {
+//                //uLogView.showLog('Return pressed!')
+//                //app.sendToChat(text)
+//            }
+//        }
+
     }
     UText{
         text: 'idGame: '+app.idGame
