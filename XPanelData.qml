@@ -156,7 +156,7 @@ Rectangle{
 
         //Puntajes de Juego Actual
         //sql='select * from games where game=\''+app.idGame+'\' order by points desc limit 5;'
-        let sql='SELECT DISTINCT nickname, points from games WHERE game=\''+app.idGame+'\' ORDER by points DESC'
+        let sql='SELECT DISTINCT nickname, points from games WHERE game=\''+app.idGame+'\' ORDER by points DESC limit 3;'
         let rows=unik.getSqlData(sql)
         let ag=[]
         let uag=[]

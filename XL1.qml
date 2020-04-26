@@ -74,7 +74,7 @@ Item {
             border.color: 'red'
             color: 'transparent'
         }
-    }  
+    }
     Timer{
         id: tcheckIsValid
         running: false
@@ -98,36 +98,133 @@ Item {
 
     function isLetterWordValid(w, u){
         //unik.speak('Procesando '+w)
-        let wcorr1=(''+w).replace(/ /g, '').replace(/\n/g, '').toLowerCase()
+        let uwcorr1=(''+w).replace(/ /g, '').replace(/\n/g, '').toLowerCase()
         var i=0
         var cwSA=app.cWord.toLowerCase().replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i').replace(/ó/g, 'o').replace(/u/g, 'ú')
-        //uLogView.showLog('cwSA:['+cwSA+'] wcorr1:['+wcorr1+']')
-        //uLogView.showLog('cant: '+JS.contarCaracteres(wcorr1, wcorr1.charAt(1)))
-        let cwCA=false
-        for(i=0;i<wcorr1.length;i++){
-            //uLogView.showLog('l'+i+': '+wcorr1.charAt(i))
-            if(app.cWord.indexOf(wcorr1.charAt(i))<0&&cwSA.indexOf(wcorr1.charAt(i))<0){
-                //unik.speak('Letra '+wcorr1.charAt(i)+' inexistente '+w+' palabra actual '+app.cWord)
-                return false
-            }
+        var uwSA=uwcorr1.replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i').replace(/ó/g, 'o').replace(/u/g, 'ú')
+
+        //Cantidad de vocales en palabra de usuario
+        let cva=JS.contarCaracteres(uwSA, 'a')//+JS.contarCaracteres(app.cWord, 'á')
+        let cve=JS.contarCaracteres(uwSA, 'e')//+JS.contarCaracteres(app.cWord, 'é')
+        let cvi=JS.contarCaracteres(uwSA, 'i')//+JS.contarCaracteres(app.cWord, 'í')
+        let cvo=JS.contarCaracteres(uwSA, 'o')//+JS.contarCaracteres(app.cWord, 'ó')
+        let cvu=JS.contarCaracteres(uwSA, 'u')//+JS.contarCaracteres(app.cWord, 'ú')
+
+        //Cantidad de vocales en palabra en juego
+        let cwcva=JS.contarCaracteres(cwSA, 'a')//+JS.contarCaracteres(app.cWord, 'á')
+        let cwcve=JS.contarCaracteres(cwSA, 'e')//+JS.contarCaracteres(app.cWord, 'é')
+        let cwcvi=JS.contarCaracteres(cwSA, 'i')//+JS.contarCaracteres(app.cWord, 'í')
+        let cwcvo=JS.contarCaracteres(cwSA, 'o')//+JS.contarCaracteres(app.cWord, 'ó')
+        let cwcvu=JS.contarCaracteres(cwSA, 'u')//+JS.contarCaracteres(app.cWord, 'ú')
+
+        if(cva>cwcva||cve>cwcve||cvi>cwcvi||cvo>cwcvo||cvu>cwcvu){
+            app.l('1')
+            return false
         }
-        for(i=0;i<app.cWord.length;i++){
-            if(app.cWord.charAt(i)==='í'){
-                cwCA=true
-                break
-            }
+
+        //User Word  Tiene Acento?
+        let uwTA=false
+        if(JS.contarCaracteres(uwcorr1, 'á')>0||JS.contarCaracteres(uwcorr1, 'é')>0||JS.contarCaracteres(uwcorr1, 'í')>0||JS.contarCaracteres(uwcorr1, 'ó')>0||JS.contarCaracteres(uwcorr1, 'ú')>0){
+            uwTA=true
         }
-        for(i=0;i<wcorr1.length;i++){
-            let clu=JS.contarCaracteres(wcorr1, wcorr1.charAt(i))
-            let clapp
-            if(cwCA){
-                clapp=JS.contarCaracteres(cwSA, wcorr1.charAt(i))
-            }else{
-                clapp=JS.contarCaracteres(app.cWord, wcorr1.charAt(i))
+
+        //Current Word  Tiene Acento?
+        let cwTA=false
+        if(JS.contarCaracteres(app.cWord, 'á')>0||JS.contarCaracteres(app.cWord, 'é')>0||JS.contarCaracteres(app.cWord, 'í')>0||JS.contarCaracteres(app.cWord, 'ó')>0||JS.contarCaracteres(app.cWord, 'ú')>0){
+            cwTA=true
+        }
+
+        if(cwTA&&uwTA){//Ambas con Acento
+            let laUW=''
+            let laCW=''
+            for(i=0;i<uwcorr1.length;i++){
+                if(uwcorr1.charAt(i)==='á'){
+                    laUW=uwcorr1.charAt(i)
+                    break
+                }
+                if(uwcorr1.charAt(i)==='é'){
+                    laUW=uwcorr1.charAt(i)
+                    break
+                }
+                if(uwcorr1.charAt(i)==='í'){
+                    laUW=uwcorr1.charAt(i)
+                    break
+                }
+                if(uwcorr1.charAt(i)==='ó'){
+                    laUW=uwcorr1.charAt(i)
+                    break
+                }
+                if(uwcorr1.charAt(i)==='ú'){
+                    laUW=uwcorr1.charAt(i)
+                    break
+                }
             }
-            if(clu>clapp){
-                //unik.speak('Usuario '+u+' se ha excedido de letras '+wcorr1.charAt(i))
-                return false
+            for(i=0;i<app.cWord.length;i++){
+                if(app.cWord.charAt(i)==='á'){
+                    laCW=app.cWord.charAt(i)
+                    break
+                }
+                if(app.cWord.charAt(i)==='é'){
+                    laCW=app.cWord.charAt(i)
+                    break
+                }
+                if(app.cWord.charAt(i)==='í'){
+                    laCW=app.cWord.charAt(i)
+                    break
+                }
+                if(app.cWord.charAt(i)==='ó'){
+                    laCW=app.cWord.charAt(i)
+                    break
+                }
+                if(app.cWord.charAt(i)==='ú'){
+                    laCW=app.cWord.charAt(i)
+                    break
+                }
+            }
+            if(laUW===laCW){//Usuario está utilizando el acento de la palabra actual
+                //Contar letras normalmente
+                for(i=0;i<uwcorr1.length;i++){
+                    //Cantidad de letras del Usurario
+                    let cluw=JS.contarCaracteres(uwcorr1, uwcorr1.charAt(i))
+
+                    //Cantidad de letras de la palabra actual
+                    let clcw=JS.contarCaracteres(app.cWord, uwcorr1.charAt(i))
+
+                    if(cluw>clcw){
+                        app.l('4')
+                        return false
+                    }
+                }
+            }else{//El usuario no está usando la misma vocal acentuada de la palabra actual
+                    //if(uwTA&&cwTA){//Ambas tienen acentos distintos
+                        //Contando las 2 sin acentos
+                        for(i=0;i<uwcorr1.length;i++){
+                            //Cantidad de letras del Usurario
+                            let cluw=JS.contarCaracteres(uwSA, uwSA.charAt(i))
+
+                            //Cantidad de letras de la palabra actual
+                            let clcw=JS.contarCaracteres(cwSA, cwSA.charAt(i))
+
+                            if(cluw>clcw){
+                                app.l('laUW:'+laUW+' laCW:'+laCW)
+                                app.l('2')
+                                return false
+                            }
+                        }
+                    //}
+            }
+        }else{//Una tiene acento y la otra no
+            for(i=0;i<uwcorr1.length;i++){
+                //Cantidad de letras del Usurario
+                let cluw=JS.contarCaracteres(uwSA, uwSA.charAt(i))
+
+                //Cantidad de letras de la palabra actual
+                let clcw=JS.contarCaracteres(cwSA, cwSA.charAt(i))
+
+                if(cluw>clcw){
+                    app.l('3')
+                    return false
+                }
             }
         }
         return true
@@ -156,7 +253,7 @@ Item {
         //unik.speak('Calculando '+wcorr1.length+' de  '+app.cWord.length+' es igual a '+calcularPuntos(wcorr1))
         //unik.speak('Palabra '+w+'de  '+u+' aceptada.')
         let point=parseInt(calcularPuntos(wcorr1))
-        let msg='<b>'+u+'  +'+point+'</b>'
+        let msg='<b>'+u+' '+w+' +'+point+'</b>'
         showPoints(msg)
         registrarScore(u, wcorr1, app.cWord, point)
     }
@@ -203,7 +300,7 @@ Item {
         rec=0.00
         if(rows.length>0){
             for(let i=0;i<rows.length;i++){
-               rec=parseFloat(rec+parseFloat(rows[i].col[6]))
+                rec=parseFloat(rec+parseFloat(rows[i].col[6]))
             }
             //uLogView.showLog('rec: '+rec)
             sql='insert into games(nickname, game, points)values(\''+u+'\',\''+app.idGame+'\', '+rec+')'

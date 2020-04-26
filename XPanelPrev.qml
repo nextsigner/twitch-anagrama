@@ -155,7 +155,7 @@ Rectangle{
 //            let anio=d.getFullYear()
 //            let fecha=' el día '+dia+'/'+mes+'/'+anio+' a las '+h+':'+m+':'+sec+' GMT -3'
             //txtPR.text='<b>'+rows[0].col[1]+'</b> logró '+rows[0].col[6]+' puntos con la palabra '+rows[0].col[3]+' cuando la palabra en juego era '+rows[0].col[2]+' el día '+fecha
-            txtPR.text='<b>'+rows[0].col[1]+' '+rows[0].col[6]+'pts '+rows[0].col[3]+' de '+rows[0].col[2]
+            txtPR.text='<b>'+rows[0].col[1]+' '+rows[0].col[6]+'pts '+rows[0].col[2]+' de '+rows[0].col[3]
         }else{
             txtPR.text='Nadie logró una palabra record.'
         }

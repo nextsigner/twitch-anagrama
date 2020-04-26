@@ -34,6 +34,8 @@ ApplicationWindow {
     property var wordsUsedBy: []
     property string idGame: '*'
 
+    property string moderador
+
     FontLoader{name: "FontAwesome"; source: "qrc:/fontawesome-webfont.ttf"}
     USettings{
         id: unikSettings
@@ -139,7 +141,8 @@ ApplicationWindow {
                 onTriggered: {
                     wv.runJavaScript('document.getElementById("root").innerText', function(result) {
                         if(result.indexOf('CHAT DE LA TRANSMISIÓN')>=0){
-                            sendToChat('Juego conectado al Chat')
+                            unik.speak('Sala de chat cargada.')
+                            //sendToChat('Juego conectado al Chat')
                             stop()
                         }
                     });
@@ -228,10 +231,21 @@ ApplicationWindow {
                             app.uHtml=result
                             return
                         }
-                        if(usuario.indexOf('nextsigner')===0&&mensaje.indexOf('!t')>=0){
+                        if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!t')>=0){
                             x1.crono.toogleCD()
                             if(x1.crono.timer.running){
 
+                            }
+                            app.uHtml=result
+                            return
+                        }
+                        if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!p')>=0){
+                            if(xPanelData.visible){
+                                xPanelData.visible=false
+                                xPanelPrev.visible=true
+                            }else{
+                                xPanelData.visible=true
+                                xPanelPrev.visible=false
                             }
                             app.uHtml=result
                             return
@@ -427,6 +441,7 @@ ApplicationWindow {
                 let d0=args[i].split('-twitchUser=')
                 //uLogView.showLog(d0[1])
                 user=d0[1]
+                app.moderador=user
                 app.user=user
                 app.url='https://www.twitch.tv/embed/'+user+'/chat'
                 //uLogView.showLog('Channel: '+app.url)
@@ -486,7 +501,7 @@ ApplicationWindow {
         unik.sqlQuery(sql)
 
         app.maxWordLength=JS.getWordCount()
-        app.cWord='manoteado'
+        app.cWord='coacción'
         //app.cWord=JS.getWord()
     }
     function isVM(m){
@@ -533,6 +548,9 @@ ApplicationWindow {
         let fn=unik.getPath(4)+'/autoit'+d.getTime()+'.au3'
         unik.setFile(fn, s)
         unik.ejecutarLineaDeComandoAparte("cmd /c \""+fn+"\"")
+    }
+    function l(t){
+        uLogView.showLog(t)
     }
 }
 
