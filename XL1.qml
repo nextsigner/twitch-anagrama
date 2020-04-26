@@ -82,7 +82,16 @@ Item {
         interval: 2000
         onTriggered: {
             if(lm.get(0)){
-                xShowSigList.search(lm.get(0).word, lm.get(0).user, true)
+                let sql='select word from words where word=\''+lm.get(0).word+'\';'
+                let rows=unik.getSqlData(sql)
+                if(rows.length>0){
+                    //palabra en bd
+                    wordProccess(lm.get(0).word, lm.get(0).user)
+                    lm.remove(0)
+                    tcheckIsValid.start()
+                }else{
+                    xShowSigList.search(lm.get(0).word, lm.get(0).user, true)
+                }
             }
         }
     }

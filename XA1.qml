@@ -54,5 +54,7 @@ Rectangle {
     }
     Component.onCompleted: {
        r.y=0
+        xPanelData.visible=true
+        xPanelPrev.visible=false
     }
 }

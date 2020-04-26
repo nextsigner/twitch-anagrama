@@ -444,7 +444,7 @@ ApplicationWindow {
         app.visible=true
         //getViewersCount()
 
-        unik.sqliteInit('anagrama2.sqlite')
+        unik.sqliteInit('bdan.sqlite')
         let sql='CREATE TABLE IF NOT EXISTS scores'
             +'('
             +'id INTEGER PRIMARY KEY AUTOINCREMENT,'

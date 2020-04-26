@@ -76,7 +76,7 @@ Item {
                                     tTempCountDown.running=!tTempCountDown.running
                                 }
                             }
-                            if(index===1){
+                            if(index===2){
                                 app.idGame=0
                                 tTempCountDown.stop()
                                 r.mCD=0
@@ -84,7 +84,7 @@ Item {
                                 r.msCD=0
                                 setArrayTimeCD()
                             }
-                            if(index===2){
+                            if(index===1){
                                 rowSBMinCD.visible=!rowSBMinCD.visible
                             }
                         }

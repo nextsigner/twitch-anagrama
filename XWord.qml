@@ -43,7 +43,13 @@ Rectangle {
             app.idGame=''
             app.wordsUsed=[]
             app.wordsUsedBy=[]
-            app.cWord=JS.getWord()
+            let sql='SELECT * FROM words ORDER BY random() LIMIT 1;'
+            let rows=unik.getSqlData(sql)
+            //uLogView.showLog('W0:'+rows.length)
+            if(rows.length>0){
+                app.cWord=rows[0].col[0]
+            }
+            //uLogView.showLog('W:'+app.cWord)
             let cons=''
             let cv=0
             for(var i=0;i<app.cWord.length;i++){
@@ -54,7 +60,7 @@ Rectangle {
                 }
             }
             labelData.text='Palabra de '+app.cWord.length+' letras consonantes  ['+cons+'] y '+cv+' vocales'
-            xShowSig.search(app.cWord, 'app', false)
+            //xShowSig.search(app.cWord, 'app', false)
         }
     }
 }
