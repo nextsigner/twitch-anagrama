@@ -233,9 +233,16 @@ ApplicationWindow {
                         }
                         if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!t')>=0){
                             x1.crono.toogleCD()
-                            if(x1.crono.timer.running){
-
-                            }
+                            app.uHtml=result
+                            return
+                        }
+                        if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!r')>=0){
+                            x1.crono.reset()
+                            app.uHtml=result
+                            return
+                        }
+                        if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!st')>=0){
+                            //x1.crono.reset()
                             app.uHtml=result
                             return
                         }
@@ -501,7 +508,7 @@ ApplicationWindow {
         unik.sqlQuery(sql)
 
         app.maxWordLength=JS.getWordCount()
-        app.cWord='coacción'
+        app.cWord='traseñaladora'
         //app.cWord=JS.getWord()
     }
     function isVM(m){

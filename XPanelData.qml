@@ -8,11 +8,14 @@ Rectangle{
     property alias timer: ud
     property int fs: app.fs*3
 
+    property bool mostrandoDatos: true
+    XM1{id: xm1;visible: !r.mostrandoDatos}
     Rectangle{
         id: xScoreTopFive
         width: r.width
         height: r.height
         color: app.c1
+        visible: r.mostrandoDatos
         Column{
             id: colHS
             //anchors.centerIn: parent
@@ -154,17 +157,27 @@ Rectangle{
 //            //labelHScore.text='<b>Record: </b> El usuario '+u+' obtuvo '+s+' puntos con la palabra '+r+' y obtenida de la palabra '+p+' '+fecha
 //        }
 
+        if(app.idGame===''){
+              r.mostrandoDatos=false
+            return
+        }
+        r.mostrandoDatos=true
         //Puntajes de Juego Actual
         //sql='select * from games where game=\''+app.idGame+'\' order by points desc limit 5;'
-        let sql='SELECT DISTINCT nickname, points from games WHERE game=\''+app.idGame+'\' ORDER by points DESC limit 3;'
+        let sql='SELECT DISTINCT nickname, points from games WHERE game=\''+app.idGame+'\' ORDER by points DESC;'
         let rows=unik.getSqlData(sql)
         let ag=[]
         let uag=[]
+        let cpm=0
         for(let i=0;i<rows.length;i++){
             if(uag.indexOf(rows[i].col[0])<0){
                 let cadg='<b>'+rows[i].col[0]+'</b>  <b>'+parseInt(rows[i].col[1])+'</b>'
                 ag.push(cadg)
                 uag.push(rows[i].col[0])
+                cpm++
+            }
+            if(cpm>=3){
+                break
             }
         }
         //console.log('::::::::::::::::::::::::::::ag:'+ag.toString())

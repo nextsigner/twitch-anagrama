@@ -118,7 +118,7 @@ Item {
         let cwcvu=JS.contarCaracteres(cwSA, 'u')//+JS.contarCaracteres(app.cWord, 'ú')
 
         if(cva>cwcva||cve>cwcve||cvi>cwcvi||cvo>cwcvo||cvu>cwcvu){
-            app.l('1')
+            //app.l('1')
             return false
         }
 
@@ -191,7 +191,7 @@ Item {
                     let clcw=JS.contarCaracteres(app.cWord, uwcorr1.charAt(i))
 
                     if(cluw>clcw){
-                        app.l('4')
+                        //app.l('4')
                         return false
                     }
                 }
@@ -206,23 +206,23 @@ Item {
                             let clcw=JS.contarCaracteres(cwSA, cwSA.charAt(i))
 
                             if(cluw>clcw){
-                                app.l('laUW:'+laUW+' laCW:'+laCW)
-                                app.l('2')
+                                //app.l('laUW:'+laUW+' laCW:'+laCW)
+                                //app.l('2')
                                 return false
                             }
                         }
                     //}
             }
-        }else{//Una tiene acento y la otra no
+        }else{//Una o la otra tiene acento
             for(i=0;i<uwcorr1.length;i++){
                 //Cantidad de letras del Usurario
                 let cluw=JS.contarCaracteres(uwSA, uwSA.charAt(i))
 
                 //Cantidad de letras de la palabra actual
-                let clcw=JS.contarCaracteres(cwSA, cwSA.charAt(i))
+                let clcw=JS.contarCaracteres(cwSA, uwSA.charAt(i))
 
                 if(cluw>clcw){
-                    app.l('3')
+                    //app.l('3. cluw:'+cluw+' clcw:'+clcw)
                     return false
                 }
             }

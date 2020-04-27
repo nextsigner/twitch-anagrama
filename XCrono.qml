@@ -116,35 +116,35 @@ Item {
         interval: 1000
         onTriggered: {
             //if(r.msCD===0){
-                r.msCD=100
-                if(r.sCD===0){
+            r.msCD=100
+            if(r.sCD===0){
 
-                    //Probar con poco tiempo
-                    //if(r.mCD===0&&r.sCD<40){
-                    if(r.mCD===0&&r.sCD===0){
-                        unik.speak('Tiempo finalizado.')
-                        xPanelData.showWinner()
-                        stop()
-                        return
-                    }
-                    r.sCD=59
-                    r.mCD--
-                    if(r.mCD===0){
-                        //r.mCD=59
-                        //r.hCD--
-                    }
-                }else{
-                    r.sCD--
+                //Probar con poco tiempo
+                //if(r.mCD===0&&r.sCD<40){
+                if(r.mCD===0&&r.sCD===0){
+                    unik.speak('Tiempo finalizado.')
+                    xPanelData.showWinner()
+                    stop()
+                    return
                 }
-//            }else{
-//                r.msCD-=1
-//            }
+                r.sCD=59
+                r.mCD--
+                if(r.mCD===0){
+                    //r.mCD=59
+                    //r.hCD--
+                }
+            }else{
+                r.sCD--
+            }
+            //            }else{
+            //                r.msCD-=1
+            //            }
             if(!r.countDown){
                 setArrayTime()
             }else{
-//                if(r.mCD===){
+                //                if(r.mCD===){
 
-//                }
+                //                }
                 setArrayTimeCD()
             }
             r.cIdGame=app.idGame
@@ -210,5 +210,14 @@ Item {
                 unik.speak('Temporizador detenido.')
             }
         }
+    }
+    function reset(){
+        tTempCountDown.stop()
+        r.mCD=0
+        r.sCD=0
+        r.msCD=0
+        setArrayTimeCD()
+        app.idGame=''
+        //setCountDownInit(sCrono.minutosCD)
     }
 }

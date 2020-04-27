@@ -8,6 +8,7 @@ Rectangle {
     color: 'transparent'
     clip: true
     property int fs: app.fs*4
+    UText{id: txtCant; text: '<b>'+app.wordsUsed.length+'</b>'; font.pixelSize: r.width*0.5; opacity: 0.65;anchors.centerIn: r}
     Item{
         id: xwu
         anchors.fill: r
@@ -60,14 +61,16 @@ Rectangle {
             if(xwu.children.length>1)return
             let data=''
             for(var i=0;i<app.wordsUsed.length;i++){
+                data+='<span style="font-size:'+parseInt(app.fs*1.5)+'px">'+app.wordsUsedBy[app.wordsUsed.indexOf(app.wordsUsed[i])]+'</span><br />'
                 data+=app.wordsUsed[i]
                 if(i<app.wordsUsed.length-1){
-                    data+='<br />'
+                    data+='<br /><br />'
                 }
             }
             tMove.interval=app.wordsUsed.length*1000
             let comp=compUWU
             let obj=comp.createObject(xwu, {y:r.height+app.fs*2, word:data, time: app.wordsUsed.length})
+            txtCant.text='<b>'+app.wordsUsed.length+'</b>'
         }
     }
     //    Timer{
