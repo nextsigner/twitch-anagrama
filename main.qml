@@ -224,7 +224,7 @@ ApplicationWindow {
                         }
                         if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!h')>=0){
                             let msgHelp='!a Activa ventana de aplicación '
-                            +'!fullreset Reinicia la aplicación !r Reinicia cronómetro !t Detiene e Inicia cronómetro !st=10 Define el temporizador en 10 minutos !sw=1280x720 Define el tamaño de la ventana de al aplicación !sv Restaura la ventana por encima de las demás'
+                                +'!fullreset Reinicia la aplicación !r Reinicia cronómetro !t Detiene e Inicia cronómetro !st=10 Define el temporizador en 10 minutos !sw=1280x720 Define el tamaño de la ventana de al aplicación !sv Restaura la ventana por encima de las demás'
                             sendToChat(msgHelp)
                             app.uHtml=result
                             enabledCheck=true
@@ -270,6 +270,32 @@ ApplicationWindow {
                             enabledCheck=true
                             return
                         }
+                        if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!srw')>=0){
+                            if(x1.crono.timer.running){
+                                x1.crono.toogleCD()
+                                x1.crono.reset()
+                            }
+                            let sql='SELECT * FROM words ORDER BY random() LIMIT 1;'
+                            let rows=unik.getSqlData(sql)
+                            //uLogView.showLog('W0:'+rows.length)
+                            if(rows.length>0){
+                                app.cWord=rows[0].col[0]
+                            }
+                            let cons=''
+                            let cv=0
+                            for(var i=0;i<app.cWord.length;i++){
+                                if(app.cWord.charAt(i)!=='á'&&app.cWord.charAt(i)!=='é'&&app.cWord.charAt(i)!=='í'&&app.cWord.charAt(i)!=='ó'&&app.cWord.charAt(i)!=='ú'&&app.cWord.charAt(i)!=='a'&&app.cWord.charAt(i)!=='e'&&app.cWord.charAt(i)!=='i'&&app.cWord.charAt(i)!=='o'&&app.cWord.charAt(i)!=='u'){
+                                    cons+=app.cWord.charAt(i)
+                                }else{
+                                    cv++
+                                }
+                            }
+                            let pregunta='[Juego Anagrama dice: ] Palabra de '+app.cWord.length+' letras consonantes  ['+cons+'] y '+cv+' vocales. Jugamos con esta palabra?'
+                            sendToChat(pregunta)
+                            app.uHtml=result
+                            enabledCheck=true
+                            return
+                        }
                         if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!sw')>=0){
                             let nst=mensaje.split('!sw=')
                             if(nst.length>1&&nst[1]!==''){
@@ -277,7 +303,7 @@ ApplicationWindow {
                                     x1.crono.toogleCD()
                                     x1.crono.reset()
                                 }
-                                app.cWord=nst[1]
+                                app.cWord=(''+nst[1]).replace(/ /g, '').replace(/ \n/g, '').replace(/ \r/g, '')
                             }
                             app.uHtml=result
                             enabledCheck=true
