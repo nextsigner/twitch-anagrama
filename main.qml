@@ -2,20 +2,21 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtWebEngine 1.4
 import QtQuick.Window 2.2
+import Qt.labs.settings 1.0
 import "funcs.js" as JS
 import "qrc:/"
 ApplicationWindow {
     id: app
     visible: true
-    visibility: "Maximized"
+    visibility: "Windowed"
     flags: Qt.FramelessWindowHint
-    //width: 1280+840
-    //height: 720
+    width: apps.w
+    height: apps.h
     x:0
     y:0
     color: 'black'
     property string moduleName: 'twitchanagrama'
-    property int fs: xApp.width*0.015
+    property int fs: xApp.width*0.012//870x720
     property color c1: 'black'
     property color c2: 'white'
     property color c3: 'gray'
@@ -37,6 +38,18 @@ ApplicationWindow {
     property string moderador
 
     FontLoader{name: "FontAwesome"; source: "qrc:/fontawesome-webfont.ttf"}
+    Settings{
+        id: apps
+        fileName: pws+'/'+app.moduleName+'/cfg.ini'
+        property int w: 920
+        property int h: 560
+        /*
+        Para emitir en 720p
+        Res 1280x720: 800x500 en prev OBS y !sv=860x480 para App Twitch Móbil
+        Res 1366x768=920x560
+        Res 1920x1080=1280x720
+        */
+    }
     USettings{
         id: unikSettings
         url:pws+'/'+app.moduleName
@@ -60,23 +73,23 @@ ApplicationWindow {
         Row{
             XPanelData{
                 id:xPanelData
-                width: xApp.width*0.75
+                width: xApp.width*0.7
                 visible: app.idGame!==''
             }
             XPanelPrev{
                 id:xPanelPrev
-                width: xApp.width*0.75
+                width: xApp.width*0.7
                 visible: app.idGame===''
             }
             X1{
                 id: x1
-                width: xApp.width*0.25
+                width: xApp.width*0.3
             }
         }
         Rectangle{
             id: xWV
             width: x1.width
-            height: app.fs*6
+            height: app.height*0.1
             anchors.bottom: parent.bottom
             clip: true
             x:x1.x
@@ -88,6 +101,7 @@ ApplicationWindow {
                 width: parent.width
                 height: xApp.height
                 anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0-app.height*0.075
                 onLoadProgressChanged: {
                     if(loadProgress===100)tCheck.start()
                 }
@@ -271,6 +285,9 @@ ApplicationWindow {
                             return
                         }
                         if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!srw')>=0){
+                            app.idGame=''
+                            app.wordsUsed=[]
+                            app.wordsUsedBy=[]
                             if(x1.crono.timer.running){
                                 x1.crono.toogleCD()
                                 x1.crono.reset()
@@ -314,8 +331,11 @@ ApplicationWindow {
                             if(nst.length>1&&nst[1]!==''){
                                 let ares=nst[1].split('x')
                                 if(ares.length>1&&ares[0]!==''&&ares[1]!==''){
+                                    app.visibility="Windowed"
                                     app.width=parseInt(ares[0])
                                     app.height=parseInt(ares[1])
+                                    apps.w=app.width
+                                    apps.h=app.height
                                     app.x=0
                                     app.y=0
                                 }
@@ -610,6 +630,8 @@ ApplicationWindow {
         if(m.indexOf(s2)>=0)return false;
         let s3='[Juego dice]'
         if(m.indexOf(s3)>=0)return false;
+        let s4='Podes enviar audios por whatsapp'
+        if(m.indexOf(s4)>=0)return false;
         return true
     }
     function autoItRequest(c){
@@ -622,8 +644,8 @@ ApplicationWindow {
     }
     function sendToChat(msg){
         clipboard.setText(msg)
-        let posx=xApp.width-app.fs*3
-        let posy=xApp.height-xApp.height*0.1
+        let posx=xApp.width-x1.width*0.5
+        let posy=xApp.height-xApp.height*0.07
         //        if(xWV.state==='hide'){
         //            posx=1280
         //        }
