@@ -33,7 +33,7 @@ Rectangle {
         }
         XWordsUsed{
             id: xWordUsed
-            height: r.height-xWord.height-xCrono.height-app.fs*2//-tiMsg.height
+            height: r.height-xWord.height-xCrono.height-app.fs*2-xWV.height
         }
         Row{
             visible:false

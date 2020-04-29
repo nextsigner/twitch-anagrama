@@ -7,10 +7,10 @@ import "qrc:/"
 ApplicationWindow {
     id: app
     visible: true
-    //visibility: "Maximized"
+    visibility: "Maximized"
     flags: Qt.FramelessWindowHint
-    width: 1280+840
-    height: 720
+    //width: 1280+840
+    //height: 720
     x:0
     y:0
     color: 'black'
@@ -55,7 +55,7 @@ ApplicationWindow {
     }
     Item{
         id: xApp
-        width: 1280
+        width: app.width
         height: app.height
         Row{
             XPanelData{
@@ -75,32 +75,19 @@ ApplicationWindow {
         }
         Rectangle{
             id: xWV
-            width: 840
-            height: xApp.height
-            x:1280
-            //            state: 'show'
-            //            states: [
-            //                State {
-            //                    name: "show"
-            //                    PropertyChanges {
-            //                        target: xWV
-            //                        x: xApp.width-xWV.width
-            //                    }
-            //                },
-            //                State {
-            //                    name: "hide"
-            //                    PropertyChanges {
-            //                        target: xWV
-            //                        x: xApp.width
-            //                    }
-            //                }
-            //            ]
+            width: x1.width
+            height: app.fs*6
+            anchors.bottom: parent.bottom
+            clip: true
+            x:x1.x
             Behavior on x{
                 NumberAnimation{duration: 250;easing.type: Easing.InOutQuad}
             }
             WebEngineView{
                 id: wv
-                anchors.fill: parent
+                width: parent.width
+                height: xApp.height
+                anchors.bottom: parent.bottom
                 onLoadProgressChanged: {
                     if(loadProgress===100)tCheck.start()
                 }
@@ -191,19 +178,22 @@ ApplicationWindow {
         }
         UWarnings{id: uWarnings}
     }
-    Rectangle{
-        width: 1280
-        height: 720
-        color: 'transparent'
-        border.width: 2
-        border.color: 'red'
-    }
+    //    Rectangle{
+    //        width: 1280
+    //        height: 720
+    //        color: 'transparent'
+    //        border.width: 2
+    //        border.color: 'red'
+    //    }
     Timer{
         id:tCheck
         running: false
         repeat: true
         interval: 250
+        property bool enabledCheck: true
         onTriggered: {
+            if(!enabledCheck)return
+            enabledCheck=false
             wv.runJavaScript('document.getElementById("root").innerText', function(result) {
                 if(result!==app.uHtml){
                     let d0=result//.replace(/\n/g, 'XXXXX')
@@ -229,21 +219,83 @@ ApplicationWindow {
 
                         if(!isVM(usuario)){
                             app.uHtml=result
+                            enabledCheck=true
+                            return
+                        }
+                        if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!h')>=0){
+                            let msgHelp='!a Activa ventana de aplicación '
+                            +'!fullreset Reinicia la aplicación !r Reinicia cronómetro !t Detiene e Inicia cronómetro !st=10 Define el temporizador en 10 minutos !sw=1280x720 Define el tamaño de la ventana de al aplicación !sv Restaura la ventana por encima de las demás'
+                            sendToChat(msgHelp)
+                            app.uHtml=result
+                            enabledCheck=true
+                            return
+                        }
+                        if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!a')>=0){
+                            app.uHtml=result
+                            app.flags=Qt.WindowStaysOnTopHint
+                            app.flags=Qt.FramelessWindowHint
+                            enabledCheck=true
+                            return
+                        }
+                        if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!fullreset')>=0){
+                            let exe=unik.getPath(1)+'/'+unik.getPath(0)
+                            let folder=unik.getPath(5)
+                            unik.setUnikStartSettings('-folder='+folder)
+                            unik.ejecutarLineaDeComandoAparte(exe)
+                            stop()
+                            Qt.quit()
+                            app.uHtml=result
                             return
                         }
                         if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!t')>=0){
                             x1.crono.toogleCD()
                             app.uHtml=result
+                            enabledCheck=true
                             return
                         }
                         if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!r')>=0){
                             x1.crono.reset()
                             app.uHtml=result
+                            enabledCheck=true
                             return
                         }
                         if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!st')>=0){
-                            //x1.crono.reset()
+                            let nst=mensaje.split('!st=')
+                            if(nst.length>1&&parseInt(nst[1])>=1){
+                                x1.crono.mUS=parseInt(nst[1])
+                                x1.crono.setCountDownInit(x1.crono.mUS)
+                                x1.crono.reset()
+                            }
                             app.uHtml=result
+                            enabledCheck=true
+                            return
+                        }
+                        if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!sw')>=0){
+                            let nst=mensaje.split('!sw=')
+                            if(nst.length>1&&nst[1]!==''){
+                                if(x1.crono.timer.running){
+                                    x1.crono.toogleCD()
+                                    x1.crono.reset()
+                                }
+                                app.cWord=nst[1]
+                            }
+                            app.uHtml=result
+                            enabledCheck=true
+                            return
+                        }
+                        if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!sv')>=0){
+                            let nst=mensaje.split('!sv=')
+                            if(nst.length>1&&nst[1]!==''){
+                                let ares=nst[1].split('x')
+                                if(ares.length>1&&ares[0]!==''&&ares[1]!==''){
+                                    app.width=parseInt(ares[0])
+                                    app.height=parseInt(ares[1])
+                                    app.x=0
+                                    app.y=0
+                                }
+                            }
+                            app.uHtml=result
+                            enabledCheck=true
                             return
                         }
                         if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!p')>=0){
@@ -255,6 +307,7 @@ ApplicationWindow {
                                 xPanelPrev.visible=false
                             }
                             app.uHtml=result
+                            enabledCheck=true
                             return
                         }
                         //                        if(usuario.indexOf('nextsigner')===0&&mensaje.indexOf('!ts')>=0){
@@ -267,12 +320,15 @@ ApplicationWindow {
                             //xWV.state='hide'
                             unik.speak('Chat iniciado.')
                             app.uHtml=result
+                            enabledCheck=true
                             return
                         }
                         if(isVM(msg)&&msg.indexOf('!r')>=0&&x1.cbe){
                             if(!x1.inTime()){
                                 unik.speak(''+usuario+' responde antes de tiempo.')
-                                //return
+                                app.uHtml=result
+                                enabledCheck=true
+                                return
                             }else{
                                 let m0=mensaje.split('!r')
                                 let m1=m0[1].split(' ')
@@ -284,11 +340,15 @@ ApplicationWindow {
                                     x1.agregarPalabra(pf, usuario)
                                 }
                             }
+                            app.uHtml=result
+                            enabledCheck=true
+                            return
                         }
                         if(isVM(msg)&&!x1.cbe){
                             if(!x1.inTime()){
                                 unik.speak(msg)
                                 app.uHtml=result
+                                enabledCheck=true
                                 return
                                 //unik.speak(''+usuario+' responde antes de tiempo.')
                                 //return
@@ -302,9 +362,13 @@ ApplicationWindow {
                                         let fmsg='Mal intento de '+usuario+'!\nLa palabra '+pf+' no es válida.'
                                         x1.wordList.showFail(fmsg)
                                         app.uHtml=result
+                                        enabledCheck=true
                                         return
                                     }
-                                    if(pf.indexOf('undefined')>=0)return
+                                    if(pf.indexOf('undefined')>=0){
+                                        enabledCheck=true
+                                        return
+                                    }
                                     //unik.speak(''+usuario+' responde palabra '+pf)
                                     if(x1.wordList.isLetterWordValid(pf)){
                                         x1.agregarPalabra(pf, usuario)
@@ -339,6 +403,7 @@ ApplicationWindow {
                     }
                 }
                 app.uHtml=result
+                enabledCheck=true
                 //uLogView.showLog(result)
             });
         }
@@ -435,7 +500,8 @@ ApplicationWindow {
             }
         }
     }
-    Component.onCompleted: {
+    Component.onCompleted: init()
+    function init(){
         app.idGame=''
 
         let user=''
@@ -528,10 +594,10 @@ ApplicationWindow {
         unik.setFile(fn, s)
         unik.ejecutarLineaDeComandoAparte("cmd /c \""+fn+"\"")
     }
-
     function sendToChat(msg){
         clipboard.setText(msg)
-        let posx=xApp.width+100
+        let posx=xApp.width-app.fs*3
+        let posy=xApp.height-xApp.height*0.1
         //        if(xWV.state==='hide'){
         //            posx=1280
         //        }
@@ -539,7 +605,7 @@ ApplicationWindow {
         //let posyR=x1.ti.y+x1.ti.parent.y+x1.ti.height//*0.5+app.fs
         wv.focus=true
         let s='#include <AutoItConstants.au3>\n'
-            +'MouseClick($MOUSE_CLICK_LEFT, '+posx+', 650, 1)\n'
+            +'MouseClick($MOUSE_CLICK_LEFT, '+posx+', '+posy+', 1)\n'
             +'Sleep(100)\n'
             +'Send("{RCTRL down}v{RCTRL up}{ENTER}")\n'
         //+'Send("{RCTRL up}")\n'

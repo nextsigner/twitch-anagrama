@@ -27,6 +27,7 @@ Item {
     property var arrayNameCD: ['Minutos', 'Segundos', 'Milisegundos']
     property bool inTime: tTempCountDown.running
     property string cIdGame:''
+    property alias mUS: sCrono.minutosCD
     onMChanged: {
         if(!r.countDown){
             if(m===0){

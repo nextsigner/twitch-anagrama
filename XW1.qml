@@ -98,6 +98,15 @@ Rectangle {
     Timer{
         running: true
         repeat: false
+        interval: 200000
+        onTriggered: {
+                r.destroy(10)
+        }
+    }
+
+    Timer{
+        running: true
+        repeat: false
         interval: 500
         onTriggered: {
             let v=0
