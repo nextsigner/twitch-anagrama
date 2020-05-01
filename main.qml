@@ -9,7 +9,7 @@ ApplicationWindow {
     id: app
     visible: true
     visibility: "Windowed"
-    flags: Qt.FramelessWindowHint
+    //flags: Qt.FramelessWindowHint
     width: apps.w
     height: apps.h
     x:0
@@ -35,7 +35,11 @@ ApplicationWindow {
     property var wordsUsedBy: []
     property string idGame: '*'
 
-    property string moderador
+    property string moderador:''
+    onIdGameChanged: {
+        app.wordsUsed=[]
+        app.wordsUsedBy=[]
+    }
 
     FontLoader{name: "FontAwesome"; source: "qrc:/fontawesome-webfont.ttf"}
     Settings{
@@ -186,6 +190,7 @@ ApplicationWindow {
         //                sendToChat('Probando')
         //            }
         //        }
+        XSetMod{id: xSetMod}
         ULogView{
             id: uLogView
             width: parent.width*0.5
@@ -247,7 +252,7 @@ ApplicationWindow {
                         if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!a')>=0){
                             app.uHtml=result
                             app.flags=Qt.WindowStaysOnTopHint
-                            app.flags=Qt.FramelessWindowHint
+                            //app.flags=Qt.FramelessWindowHint
                             enabledCheck=true
                             return
                         }
@@ -255,7 +260,7 @@ ApplicationWindow {
                             let exe=unik.getPath(1)+'/'+unik.getPath(0)
                             let folder=unik.getPath(5)
                             unik.setUnikStartSettings('-folder='+folder)
-                            unik.ejecutarLineaDeComandoAparte(exe)
+                            unik.ejecutarLineaDeComandoAparte(exe+' -twitchUser='+app.moderador)
                             stop()
                             Qt.quit()
                             app.uHtml=result
@@ -531,6 +536,12 @@ ApplicationWindow {
         }
     }
     Shortcut{
+        sequence: 'i'
+        onActivated: {
+            sendToChat('')
+        }
+    }
+    Shortcut{
         sequence: 'r'
         onActivated: {
             app.wordsUsed.push(JS.getWord())
@@ -546,13 +557,13 @@ ApplicationWindow {
             }
         }
     }
-    Component.onCompleted: init()
-    function init(){
-        app.idGame=''
 
+    property bool launch: false
+
+    Component.onCompleted: {
         let user=''
-        let launch=false
         let args = Qt.application.arguments
+
         //uLogView.showLog(args)
         for(var i=0;i<args.length;i++){
             //uLogView.showLog(args[i])
@@ -566,11 +577,20 @@ ApplicationWindow {
                 //uLogView.showLog('Channel: '+app.url)
             }
             if(args[i].indexOf('-launch')>=0){
-                launch=true
+                app.launch=true
             }
         }
+        if(user===''){
+            xSetMod.visible=true
+            return
+        }
         wv.url=app.url
-        if(launch){
+        init()
+    }
+    function init(){
+        app.idGame=''
+
+        if(app.launch){
             Qt.openUrlExternally(app.url)
         }
 
