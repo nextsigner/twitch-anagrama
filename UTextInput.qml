@@ -4,6 +4,7 @@ Item{
     id:r
     width: parent.width
     height: r.fontSize*2
+    property var us: app&&app.us?app.us:unikSettings
     property alias textInput:tiData
     property alias text:tiData.text
     property alias textInputContainer: rectXTextInput
@@ -27,7 +28,7 @@ Item{
         Text{
             id: label
             text: r.label
-            font.family: unikSettings.fontFamily
+            font.family: r.us.fontFamily
             font.pixelSize: r.fontSize
             color: r.fontColor
             anchors.verticalCenter: parent.verticalCenter
@@ -37,9 +38,9 @@ Item{
             width: r.width-label.contentWidth-parent.spacing
             height: r.customHeight===-1?r.fontSize*2:r.customHeight
             color: 'transparent'
-            border.width: unikSettings.borderWidth
+            border.width: r.us.borderWidth
             border.color: r.fontColor
-            radius: unikSettings.radius
+            radius: r.us.radius
             Rectangle{
                 anchors.fill: parent
                 color: !tiData.focus?app.c2:'transparent'

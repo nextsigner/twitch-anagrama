@@ -3,14 +3,15 @@ import QtGraphicalEffects 1.0
 
 Rectangle {
     id: r
-    width: a.contentWidth+(r.fontSize*2*(unikSettings.padding*2))+(unikSettings.borderWidth*2)+app.fs+padding
-    height: a.contentHeight+(r.fontSize*2*(unikSettings.padding*2))+(unikSettings.borderWidth*2)+app.fs+padding
+    width: a.contentWidth+(r.fontSize*2*(r.us.padding*2))+(r.us.borderWidth*2)+app.fs+padding
+    height: a.contentHeight+(r.fontSize*2*(r.us.padding*2))+(r.us.borderWidth*2)+app.fs+padding
     opacity: enabled?1.0:0.5
     color: 'transparent'
-    radius: customRadius===-1?unikSettings.radius:customRadius
+    radius: customRadius===-1?r.us.radius:customRadius
     border.color: xR1.border.color
     border.width: 0
     antialiasing: true
+    property var us: app&&app.us?app.us:unikSettings
     property int customRadius: -1
     property int customBorderWidth: -1
     property string customBorderColor: ''
@@ -36,9 +37,9 @@ Rectangle {
     Rectangle{
         id: xR1
         color: 'transparent'
-        border.width: r.customBorderWidth===-1?unikSettings.borderWidth:r.customBorderWidth
+        border.width: r.customBorderWidth===-1?r.us.borderWidth:r.customBorderWidth
         border.color: r.customBorderColor===''?app.c3:r.customBorderColor
-        radius: r.radius//unikSettings.radius
+        radius: r.radius//r.us.radius
         width: parent.width
         height: parent.height
         anchors.centerIn: r

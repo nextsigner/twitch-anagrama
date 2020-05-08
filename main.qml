@@ -4,8 +4,7 @@ import QtWebEngine 1.4
 import QtQuick.Window 2.2
 import Qt.labs.settings 1.0
 import "funcs.js" as JS
-import "qrc:/"
-ApplicationWindow {
+UApplicationWindow {
     id: app
     visible: true
     visibility: "Windowed"
@@ -14,18 +13,14 @@ ApplicationWindow {
     height: apps.h
     x:0
     y:0
-    color: 'black'
-    property string moduleName: 'twitch-anagrama'
-    property int fs: xApp.width*0.012//870x720
-    property color c1: 'black'
-    property color c2: 'white'
-    property color c3: 'gray'
-    property color c4: 'red'
+    moduleName: 'twitch-anagrama'
+    fs: xApp.width*0.012//870x720
     property string uHtml: ''
     property bool voiceEnabled: true
 
     property string user: ''
     property string url: ''
+    property bool launch: false
 
     //Variables de Juego
     property int maxWordLength: 0
@@ -41,7 +36,6 @@ ApplicationWindow {
         app.wordsUsedBy=[]
     }
 
-    FontLoader{name: "FontAwesome"; source: "qrc:/fontawesome-webfont.ttf"}
     Settings{
         id: apps
         fileName: pws+'/'+app.moduleName+'/cfg.ini'
@@ -53,22 +47,6 @@ ApplicationWindow {
         Res 1366x768=920x560
         Res 1920x1080=1280x720
         */
-    }
-    USettings{
-        id: unikSettings
-        url:pws+'/'+app.moduleName+'.cfg'
-        onCurrentNumColorChanged: setVars()
-        Component.onCompleted: {
-            setVars()
-        }
-        function setVars(){
-            let m0=defaultColors.split('|')
-            let ct=m0[currentNumColor].split('-')
-            app.c1=ct[0]
-            app.c2=ct[1]
-            app.c3=ct[2]
-            app.c4=ct[3]
-        }
     }
     Item{
         id: xApp
@@ -197,13 +175,6 @@ ApplicationWindow {
         }
         UWarnings{id: uWarnings}
     }
-    //    Rectangle{
-    //        width: 1280
-    //        height: 720
-    //        color: 'transparent'
-    //        border.width: 2
-    //        border.color: 'red'
-    //    }
     Timer{
         id:tCheck
         running: false
@@ -557,10 +528,7 @@ ApplicationWindow {
             }
         }
     }
-
-    property bool launch: false
-
-    Component.onCompleted: {
+   Component.onCompleted: {
         let user=''
         let args = Qt.application.arguments
 
@@ -691,18 +659,6 @@ ApplicationWindow {
         unik.setFile(fn, s)
         unik.ejecutarLineaDeComandoAparte("cmd /c \""+fn+"\"")
     }
-    function l(t){
-        uLogView.showLog(t)
-    }
-    function setDesktopIcon(params){
-        let path=pws+"/"+app.moduleName
-        if(Qt.platform.os==='windows'){
-            if(!unik.folderExist(path)){
-                unik.mkdir(path)
-                app.l(path)
-            }
-            unik.createLink(unik.getPath(1)+"/unik.exe", " "+params+" -git=https://github.com/nextsigner/"+app.moduleName+".git",  unik.getPath(7)+"/Desktop/Update-"+app.moduleName.toUpperCase()+".lnk", "Update-"+app.moduleName.toUpperCase()+"", path);
-        }
-    }
-}
+
+   }
 
