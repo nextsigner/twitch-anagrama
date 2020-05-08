@@ -15,7 +15,7 @@ ApplicationWindow {
     x:0
     y:0
     color: 'black'
-    property string moduleName: 'twitchanagrama'
+    property string moduleName: 'twitch-anagrama'
     property int fs: xApp.width*0.012//870x720
     property color c1: 'black'
     property color c2: 'white'
@@ -56,7 +56,7 @@ ApplicationWindow {
     }
     USettings{
         id: unikSettings
-        url:pws+'/'+app.moduleName
+        url:pws+'/'+app.moduleName+'.cfg'
         onCurrentNumColorChanged: setVars()
         Component.onCompleted: {
             setVars()
@@ -574,18 +574,19 @@ ApplicationWindow {
                 app.moderador=user
                 app.user=user
                 app.url='https://www.twitch.tv/embed/'+user+'/chat'
-                //uLogView.showLog('Channel: '+app.url)
             }
             if(args[i].indexOf('-launch')>=0){
                 app.launch=true
             }
         }
+        //unik.mkdir("C:/Users/qt/Desktop/aaa")
         if(user===''){
             xSetMod.visible=true
             return
         }
         wv.url=app.url
         init()
+        setDesktopIcon("-twitchUser="+user)
     }
     function init(){
         app.idGame=''
@@ -692,6 +693,16 @@ ApplicationWindow {
     }
     function l(t){
         uLogView.showLog(t)
+    }
+    function setDesktopIcon(params){
+        let path=pws+"/"+app.moduleName
+        if(Qt.platform.os==='windows'){
+            if(!unik.folderExist(path)){
+                unik.mkdir(path)
+                app.l(path)
+            }
+            unik.createLink(unik.getPath(1)+"/unik.exe", " "+params+" -git=https://github.com/nextsigner/"+app.moduleName+".git",  unik.getPath(7)+"/Desktop/Update-"+app.moduleName.toUpperCase()+".lnk", "Update-"+app.moduleName.toUpperCase()+"", path);
+        }
     }
 }
 

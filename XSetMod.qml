@@ -36,11 +36,12 @@ Rectangle {
         }
     }
     function setMod(){
-        app.moderador=tiSetMod.text.toUpperCase().replace(/ /g, '')
+        app.moderador=tiSetMod.text.toLowerCase().replace(/ /g, '')
         app.user=app.moderador
         app.url='https://www.twitch.tv/embed/'+app.moderador+'/chat'
         wv.url=app.url
         app.init()
         r.visible=false
+        setDesktopIcon("-twitchUser="+app.user)
     }
 }
