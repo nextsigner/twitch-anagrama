@@ -611,6 +611,19 @@ UApplicationWindow {
         app.maxWordLength=JS.getWordCount()
         app.cWord='traseñaladora'
         //app.cWord=JS.getWord()
+        if(Qt.platform.os==='linux'){
+            let m0=(''+ttsLocales).split(',')
+            let index=0
+            for(var i=0;i<m0.length;i++){
+                console.log('Language: '+m0[i])
+                if((''+m0[i]).indexOf('Spanish (Spain)')>=0){
+                    index=i
+                    break
+                }
+            }
+            unik.ttsLanguageSelected(index)
+            unik.speak('Aplicación '+app.moduleName+' iniciada.')
+        }
     }
     function isVM(m){
         let s1='Nightbot'

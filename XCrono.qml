@@ -38,6 +38,7 @@ Item {
     }
     Settings{
         id: sCrono
+        fileName: pws+'/'+app.moduleName+'/cCrono'
         property int minutosCD: 10
     }
 

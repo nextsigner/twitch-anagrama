@@ -19,6 +19,7 @@ Rectangle {
     property alias crono: xCrono
     Settings{
         id: sX1
+        fileName: pws+'/'+app.moduleName+'/sX1'
         property bool cbCE: false
     }
     Column{
