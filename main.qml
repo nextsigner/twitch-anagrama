@@ -75,6 +75,7 @@ UApplicationWindow {
             anchors.bottom: parent.bottom
             clip: true
             x:x1.x
+            state: "min"
             states: [
                 State {
                     name: "min"
