@@ -75,6 +75,16 @@ UApplicationWindow {
             anchors.bottom: parent.bottom
             clip: true
             x:x1.x
+            states: [
+                State {
+                    name: "min"
+                    PropertyChanges { target: xWV; x:x1.x; width: x1.width; height: app.height*0.1 }
+                },
+                State {
+                    name: "max"
+                    PropertyChanges { target: xWV; x:0; width: xApp.width; height:  xWV.parent.height }
+                }
+            ]
             Behavior on x{
                 NumberAnimation{duration: 250;easing.type: Easing.InOutQuad}
             }
@@ -83,7 +93,7 @@ UApplicationWindow {
                 width: parent.width
                 height: xApp.height
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: 0-app.height*0.075
+                anchors.bottomMargin: xWV.state==="min"?0-app.height*0.075:0
                 onLoadProgressChanged: {
                     if(loadProgress===100)tCheck.start()
                 }
@@ -183,6 +193,7 @@ UApplicationWindow {
         property bool enabledCheck: true
         onTriggered: {
             if(!enabledCheck)return
+            if((''+wv.url).indexOf('https://www.twitch.tv/embed/')<0)return
             enabledCheck=false
             wv.runJavaScript('document.getElementById("root").innerText', function(result) {
                 if(result!==app.uHtml){
@@ -214,7 +225,7 @@ UApplicationWindow {
                         }
                         if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!h')>=0){
                             let msgHelp='!a Activa ventana de aplicación '
-                                +'!fullreset Reinicia la aplicación !r Reinicia cronómetro !t Detiene e Inicia cronómetro !st=10 Define el temporizador en 10 minutos !sw=1280x720 Define el tamaño de la ventana de al aplicación !sv Restaura la ventana por encima de las demás'
+                                +'!fullreset Reinicia la aplicación !r Reinicia cronómetro !t Detiene e Inicia cronómetro !st=10 Define el temporizador en 10 minutos !sw=1280x720 Define el tamaño de la ventana de al aplicación !sv Restaura la ventana por encima de las demás. !sw=palabra para elegir nueva palabra de juego. Ctrl+w para maximizar navegador web. Ctrl+l para poder ir a opciones de cerrar sesión arriba a la derecha.'
                             sendToChat(msgHelp)
                             app.uHtml=result
                             enabledCheck=true
@@ -250,7 +261,7 @@ UApplicationWindow {
                             return
                         }
                         if(usuario.indexOf(app.moderador)===0&&mensaje.indexOf('!st')>=0){
-                            let nst=mensaje.split('!st=')
+                            var nst=mensaje.split('!st=')
                             if(nst.length>1&&parseInt(nst[1])>=1){
                                 x1.crono.mUS=parseInt(nst[1])
                                 x1.crono.setCountDownInit(x1.crono.mUS)
@@ -297,6 +308,7 @@ UApplicationWindow {
                                     x1.crono.reset()
                                 }
                                 app.cWord=(''+nst[1]).replace(/ /g, '').replace(/ \n/g, '').replace(/ \r/g, '')
+                                unik.speak('Palabra de juego cambiada.')
                             }
                             app.uHtml=result
                             enabledCheck=true
@@ -449,6 +461,28 @@ UApplicationWindow {
         }
     }
     Shortcut{
+        sequence: 'Ctrl+w'
+        onActivated: {
+            if(xWV.state==="max"){
+                xWV.state="min"
+            }else{
+                xWV.state="max"
+            }
+        }
+    }
+    Shortcut{
+        sequence: 'Ctrl+l'
+        onActivated: {
+            wv.url='https://m.twitch.tv/login'
+        }
+    }
+    Shortcut{
+        sequence: 'Ctrl+c'
+        onActivated: {
+            wv.url=app.url
+        }
+    }
+    Shortcut{
         sequence: 'Up'
         onActivated: {
 
@@ -528,7 +562,7 @@ UApplicationWindow {
             }
         }
     }
-   Component.onCompleted: {
+    Component.onCompleted: {
         let user=''
         let args = Qt.application.arguments
 
@@ -541,7 +575,7 @@ UApplicationWindow {
                 user=d0[1]
                 app.moderador=user
                 app.user=user
-                app.url='https://www.twitch.tv/embed/'+user+'/chat'
+                app.url='https://www.twitch.tv/embed/'+user+'/chat?parent=nextsigner.github.io'
             }
             if(args[i].indexOf('-launch')>=0){
                 app.launch=true
@@ -673,5 +707,5 @@ UApplicationWindow {
         unik.ejecutarLineaDeComandoAparte("cmd /c \""+fn+"\"")
     }
 
-   }
+}
 
