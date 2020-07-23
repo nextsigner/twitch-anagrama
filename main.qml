@@ -483,6 +483,14 @@ UApplicationWindow {
             wv.url=app.url
         }
     }
+
+    Shortcut{
+        sequence: 'Ctrl+s'
+        onActivated: {
+            let t='Twitch Anagrama - Envía tu palabra y suma puntos! Forma una palabra con las letras de la palabra que está arriba a la derecha'
+            sendToChat(t)
+        }
+    }
     Shortcut{
         sequence: 'Up'
         onActivated: {
